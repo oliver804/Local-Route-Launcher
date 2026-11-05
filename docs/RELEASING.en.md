@@ -9,9 +9,9 @@
 3. The original author's public commit identity is `Oliver <oliver804x@gmail.com>`. Contributors should use their own public identity, not Oliver's.
 4. Add the remote URL of the repository you created and push `main`.
 5. Confirm GitHub Actions CI passes and review the release contents.
-6. Tag the reviewed commit `v1.4.0` and push that tag.
+6. Tag the reviewed commit `v1.4.1` and push that tag.
 
-A `v*` tag runs the release workflow: validate the tag against `VERSION`, run source and core checks, build and verify both the macOS DMG and Windows installer, export clean source, and create a **draft GitHub Release** with attachments. Review the draft and files before clicking Publish release. The workflow uses the repository's temporary `GITHUB_TOKEN`; never commit personal tokens.
+A `v*` tag runs the release workflow: validate the tag against `VERSION`, run source and core checks, build and verify both macOS architectures and the Windows installer, export clean source, and create a **draft GitHub Release** with attachments. Review the draft and files before clicking Publish release. The workflow uses the repository's temporary `GITHUB_TOKEN`; never commit personal tokens.
 
 To explicitly request public publication, use an annotated tag with a standalone `Publish-Release: true` line in its message. The workflow publishes only after every check passes and all assets are uploaded. Tags without that marker remain draft-only.
 
@@ -22,16 +22,19 @@ make check
 make test
 make integration
 make ui
-make dmg
-make verify
+MACOS_ARCH=arm64 make dmg verify
+MACOS_ARCH=x86_64 make dmg verify
 ```
 
-Upload these four files from `dist/1.4.0/`:
+Upload these five files from `dist/1.4.1/`:
 
-- `Local-Route-Launcher-1.4.0-arm64.dmg`
-- `Local-Route-Launcher-1.4.0-windows-x64-setup.exe`
-- `Local-Route-Launcher-1.4.0-source.zip`
+- `Local-Route-Launcher-1.4.1-arm64.dmg`
+- `Local-Route-Launcher-1.4.1-x86_64.dmg`
+- `Local-Route-Launcher-1.4.1-windows-x64-setup.exe`
+- `Local-Route-Launcher-1.4.1-source.zip`
 - `SHA256SUMS.txt`
+
+macOS app bundles are isolated under `build/release/arm64/` and `build/release/x86_64/`. Local builds write `SHA256SUMS-arm64.txt` or `SHA256SUMS-x86_64.txt`; the release workflow builds, tests and verifies each DMG on a native Apple Silicon or Intel runner, then generates `SHA256SUMS.txt` covering both DMGs, the Windows installer and one source archive. Running cross-compiled tests requires target-instruction support (Rosetta for Intel tests on Apple Silicon).
 
 The checksum file uses relative filenames. Run `shasum -a 256 -c SHA256SUMS.txt` inside that directory to verify integrity. The app includes credits and its license. Default packages are ad-hoc signed, not notarized.
 
@@ -73,6 +76,6 @@ On Windows x64, install .NET SDK 10.0.402 and Inno Setup 6, then run:
 
 The script creates a self-contained EXE installer and tests per-user installation, an isolated fixture, eighteen localized theme renders, tray lifecycle and uninstall. It does not test a real signed-in ChatGPT account. CI uses Windows Server runners; release compatibility with Windows 10/11 target packages still depends on their installation and Electron support. Inno Setup's installer wizard uses English; the application itself supports nine languages.
 
-After both platform jobs pass, the release workflow assembles the reviewed assets, generates a combined checksum manifest and creates a draft. Only annotated tags containing `Publish-Release: true` trigger public publication. Previously published assets are retained. Windows uninstall preserves user settings. Quit the launcher from its tray before upgrading or uninstalling. Confirm both platform builds, release assembly and website checks before declaring a release complete.
+After both macOS architecture jobs and the Windows job pass, the release workflow assembles the reviewed assets, generates a combined checksum manifest and creates a draft. Only annotated tags containing `Publish-Release: true` trigger public publication. Previously published assets are retained. Windows uninstall preserves user settings. Quit the launcher from its tray before upgrading or uninstalling. Confirm both platform builds, release assembly and website checks before declaring a release complete.
 
 Do not claim Windows Authenticode signing or notarization: current Windows packages are unsigned. Bundled .NET notices must accompany the self-contained runtime. Source ZIPs exclude all .NET bin/obj output and local test results.

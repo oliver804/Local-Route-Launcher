@@ -1,5 +1,13 @@
 # Changelog / 更新日志
 
+## 1.4.1 — 2026-11-05
+
+- Add a separate Intel Mac (x86_64) DMG alongside the Apple Silicon (arm64) DMG; both require macOS 13+.
+- Select update installers by the running macOS binary architecture and hide updates when the matching asset is missing.
+- Build and test both macOS architectures on native CI runners; validate each DMG's executable architecture and publish combined checksums with the Windows installer and source archive.
+- Add explicit Apple Silicon / Intel download choices and compatibility guidance to the bilingual website and documentation. Intel target applications must themselves support Intel or Universal builds.
+- 新增 Intel Mac（x86_64）独立安装包；按架构选择更新下载，并同步官网、双语说明及发布校验。
+
 ## 1.4.0 — 2026-10-30
 
 - Apply the accepted compact layout: shared language/appearance/GitHub icons at the top right, original three-card content, two-line idle footer, and a compact menu/tray panel.

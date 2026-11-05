@@ -2,23 +2,23 @@
 <p align="center">App-specific launch settings for macOS and Windows</p>
 
 <p align="center">
-  <a href="https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.0"><img src="https://img.shields.io/badge/version-1.4.0-168570" alt="Version 1.4.0"></a>
+  <a href="https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.1"><img src="https://img.shields.io/badge/version-1.4.1-168570" alt="Version 1.4.1"></a>
   <img src="https://img.shields.io/badge/macOS-13%2B-333333" alt="macOS 13+">
-  <img src="https://img.shields.io/badge/Apple_Silicon-arm64-333333" alt="Apple Silicon arm64">
+  <img src="https://img.shields.io/badge/macOS-arm64_%7C_x86__64-333333" alt="Apple Silicon and Intel">
   <img src="https://img.shields.io/badge/Windows-10%2F11_x64-0078D4" alt="Windows 10 / 11 x64">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License"></a>
 </p>
 <p align="center">
   <a href="README.md">简体中文</a> · <b>English</b><br>
   <a href="https://oliver804.github.io/Local-Route-Launcher/en/">Website</a> ·
-  <a href="https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.0">Download</a> ·
-  <a href="https://oliver804.github.io/Local-Route-Launcher/en/blog/v1.4.0/">Release article</a> ·
+  <a href="https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.1">Download</a> ·
+  <a href="https://oliver804.github.io/Local-Route-Launcher/en/blog/v1.4.1/">Release article</a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#faq">FAQ</a> ·
   <a href="https://github.com/oliver804/Local-Route-Launcher/issues">Report an issue</a>
 </p>
 
-> Current stable release: [v1.4.0](https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.0), with separate profiles for ChatGPT, Antigravity App and Antigravity IDE.
+> Current stable release: [v1.4.1](https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.1), with separate profiles for ChatGPT, Antigravity App and Antigravity IDE.
 
 ## Preview
 
@@ -69,12 +69,15 @@ Interface languages: English, Simplified Chinese, Traditional Chinese, Russian, 
 
 | Version | Requirements | Download |
 | --- | --- | --- |
-| **v1.4.0** | Apple Silicon · macOS 13+ | [Download DMG](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.0/Local-Route-Launcher-1.4.0-arm64.dmg) |
-| **v1.4.0** | Windows 10 22H2 / Windows 11 · x64 | [Download EXE installer](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.0/Local-Route-Launcher-1.4.0-windows-x64-setup.exe) |
+| **v1.4.1** | Apple Silicon · macOS 13+ | [Download DMG](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-arm64.dmg) |
+| **v1.4.1** | Intel · x86_64 · macOS 13+ | [Download DMG](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-x86_64.dmg) |
+| **v1.4.1** | Windows 10 22H2 / Windows 11 · x64 | [Download EXE installer](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-windows-x64-setup.exe) |
 
-Open the DMG and drag **Local Route Launcher** to **Applications**. The [release page](https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.0) also provides a source archive and SHA-256 checksums.
+Check Apple menu → **About This Mac**: choose **arm64** for Apple M-series chips or **x86_64** for Intel processors. Both installers require macOS 13+.
 
-> Detectable **Electron versions of ChatGPT, Antigravity App and Antigravity IDE** are supported. Older native versions, Intel Macs and Windows ARM64 are unsupported by the current release. Restricted Microsoft Store packages may not allow direct launch.
+Open the DMG and drag **Local Route Launcher** to **Applications**. The [release page](https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.1) also provides a source archive and SHA-256 checksums.
+
+> Detectable **Electron versions of ChatGPT, Antigravity App and Antigravity IDE** are supported. Intel Macs need an Intel or Universal build of the target app; this launcher cannot run an Apple-Silicon-only app on Intel. Older native versions and Windows ARM64 remain unsupported. Restricted Microsoft Store packages may not allow direct launch.
 
 **Windows:** run the EXE installer for the current user; no separate .NET installation is needed. Includes nine interface languages, system tray controls and light / dark themes. The launcher searches installed packages; use **Choose app** to select a compatible executable for the selected app if needed. Windows ARM64 is not a supported or validated target.
 
@@ -147,7 +150,7 @@ The badge appears only when GitHub has a newer stable release with an installer 
 
 ## Development
 
-**macOS development:** requires an Apple Silicon Mac, Xcode Command Line Tools (Swift 5.9+), and Python 3.
+**macOS development:** requires an Apple Silicon or Intel Mac, Xcode Command Line Tools (Swift 5.9+), and Python 3.
 
 ```sh
 make check       # Privacy and script checks
@@ -157,9 +160,11 @@ make dmg         # Create DMG, source ZIP, and checksums
 make verify      # Validate the package, signature, and icon
 ```
 
-The app is written to `build/release/`, and release files to `dist/1.4.0/`. [`VERSION`](VERSION) is the single build-version source.
+The app is written to `build/release/<architecture>/`, and release files to `dist/1.4.1/`. [`VERSION`](VERSION) is the single build-version source.
 
 `make integration` and `make ui` require a logged-in macOS graphical session and only operate dedicated test apps and windows. `make previews` renders previews using sample data.
+
+The default build targets the host architecture. Use `MACOS_ARCH=x86_64 make dmg verify` for Intel, or `MACOS_ARCH=arm64 make dmg verify` for Apple Silicon. Cross-compilation is not a substitute for target-machine validation.
 
 **Windows development:** use Windows x64, .NET SDK 10.0.402 and Inno Setup 6.
 
@@ -167,7 +172,7 @@ The app is written to `build/release/`, and release files to `dist/1.4.0/`. [`VE
 ./scripts/build-windows.ps1 -Test
 ```
 
-The installer is written to `dist/1.4.0/`. Tests use an isolated fixture, not a real ChatGPT account.
+The installer is written to `dist/1.4.1/`. Tests use an isolated fixture, not a real ChatGPT account.
 
 [Issues](https://github.com/oliver804/Local-Route-Launcher/issues) and PRs are welcome. See [Contributing](CONTRIBUTING.md), [Architecture](docs/ARCHITECTURE.en.md), and [Releasing](docs/RELEASING.en.md) for development details.
 
@@ -180,7 +185,7 @@ No login, telemetry, or automatic uploads; settings stay on your device. Connect
 
 Independent project, not affiliated with, sponsored by, or endorsed by OpenAI or Google. Product names and trademarks belong to their respective owners and identify compatibility only. Use only with networks and services you are authorized to access; applicable laws and service terms still apply. [Usage boundaries](docs/USAGE.en.md) · [Third-party notices](THIRD_PARTY_NOTICES.md) · [Project introduction](docs/ANNOUNCEMENT.en.md).
 
-### Multi-app support in v1.4.0
+### Multi-app support in v1.4.1
 
 Select ChatGPT, Antigravity App, or Antigravity IDE in the sidebar. Each app has separate saved proxy settings, a retained editing draft, launch controls, and diagnostics. Existing ChatGPT settings are preserved. Choose any of the nine languages or Follow system from the main window or menu bar / tray; language is shared across all apps. Save work before stopping an app. New proxy settings take effect on its next launch.
 

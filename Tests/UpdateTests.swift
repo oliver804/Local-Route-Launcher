@@ -21,17 +21,35 @@ enum UpdateTests {
             catch { count += 1 }
         }
         func installer(_ tag: String, name: String? = nil, url: String? = nil) throws -> Data {
-            let filename = name ?? "Local-Route-Launcher-\(tag.dropFirst())-arm64.dmg"
+            let filename = name ?? "Local-Route-Launcher-\(tag.dropFirst())-\(ReleaseUpdate.MacArchitecture.current.rawValue).dmg"
             var object = try JSONSerialization.jsonObject(with: payload(tag)) as! [String: Any]
             object["assets"] = [["name": filename, "browser_download_url": url ?? ReleaseUpdate.repository + "/releases/download/" + tag + "/" + filename]]
             return try JSONSerialization.data(withJSONObject: object)
         }
-        let expectedDownload = ReleaseUpdate.repository + "/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-arm64.dmg"
+        let expectedDownload = ReleaseUpdate.repository + "/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-\(ReleaseUpdate.MacArchitecture.current.rawValue).dmg"
         check(try ReleaseUpdate.parse(installer("v1.4.1"), current: "1.4.0").availableDownload?.absoluteString == expectedDownload, "Direct macOS installer URL")
         check(try ReleaseUpdate.parse(payload("v1.4.1"), current: "1.4.0").availableDownload == nil, "Hide release without installer")
         check(try ReleaseUpdate.parse(installer("v1.4.0"), current: "1.4.0").availableDownload == nil, "Hide current version")
         check(try ReleaseUpdate.parse(installer("v1.3.0"), current: "1.4.0").availableDownload == nil, "Hide older installer")
         check(try ReleaseUpdate.parse(installer("v1.4.1", name: "Local-Route-Launcher-1.4.1-windows-x64-setup.exe"), current: "1.4.0").availableDownload == nil, "Reject other platform")
+        #if arch(x86_64)
+        check(ReleaseUpdate.MacArchitecture.current == .x86_64, "Intel binary uses Intel updates")
+        #else
+        check(ReleaseUpdate.MacArchitecture.current == .arm64, "Apple Silicon binary uses arm64 updates")
+        #endif
+        var multiAsset = try JSONSerialization.jsonObject(with: payload("v1.4.1")) as! [String: Any]
+        multiAsset["assets"] = ReleaseUpdate.MacArchitecture.allCases.map { arch in
+            let name = "Local-Route-Launcher-1.4.1-\(arch.rawValue).dmg"
+            return ["name": name, "browser_download_url": ReleaseUpdate.repository + "/releases/download/v1.4.1/" + name]
+        }
+        let bothMacs = try JSONSerialization.data(withJSONObject: multiAsset)
+        for arch in ReleaseUpdate.MacArchitecture.allCases {
+            let filename = "Local-Route-Launcher-1.4.1-\(arch.rawValue).dmg"
+            let other: ReleaseUpdate.MacArchitecture = arch == .arm64 ? .x86_64 : .arm64
+            check(try ReleaseUpdate.parse(bothMacs, current: "1.4.0", architecture: arch).availableDownload?.lastPathComponent == filename, "Select \(arch.rawValue) from a multi-platform release")
+            check(try ReleaseUpdate.parse(installer("v1.4.1", name: filename), current: "1.4.0", architecture: other).availableDownload == nil, "Never offer the wrong Mac architecture")
+            check(try ReleaseUpdate.parse(installer("v1.4.1", name: filename, url: "https://example.com/" + filename), current: "1.4.0", architecture: arch).availableDownload == nil, "Reject untrusted \(arch.rawValue) asset")
+        }
         for badURL in ["https://example.com/setup.dmg", expectedDownload + "?redirect=elsewhere", expectedDownload.replacingOccurrences(of: "v1.4.1/", with: "v1.3.0/")] {
             check(try ReleaseUpdate.parse(installer("v1.4.1", url: badURL), current: "1.4.0").availableDownload == nil, "Reject mismatched installer")
         }

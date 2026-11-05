@@ -7,6 +7,7 @@ hdiutil attach -readonly -nobrowse -mountpoint "$MOUNT_DIR" "$RELEASE_DIR/$DMG_N
 trap 'hdiutil detach "$MOUNT_DIR"' EXIT
 MOUNTED_APP="$MOUNT_DIR/Local Route Launcher.app"
 test -x "$MOUNTED_APP/Contents/MacOS/LocalRouteLauncher"
+test "$(lipo -archs "$MOUNTED_APP/Contents/MacOS/LocalRouteLauncher")" = "$MACOS_ARCH"
 test "$(readlink "$MOUNT_DIR/Applications")" = "/Applications"
 test -f "$MOUNT_DIR/安装说明.txt"
 test -f "$MOUNT_DIR/Installation.txt"
@@ -17,12 +18,12 @@ cmp "$APP_PATH/Contents/MacOS/LocalRouteLauncher" "$MOUNTED_APP/Contents/MacOS/L
 ICON_FILE="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIconFile' "$MOUNTED_APP/Contents/Info.plist")"
 cmp "$APP_PATH/Contents/Resources/$ICON_FILE" "$MOUNTED_APP/Contents/Resources/$ICON_FILE"
 python3 scripts/privacy-check.py --bundle "$MOUNTED_APP"
-swiftc "${SWIFT_FLAGS[@]}" scripts/verify-icon.swift -o build/verify-icon
+swiftc "${HOST_SWIFT_FLAGS[@]}" scripts/verify-icon.swift -o "$BUILD_DIR/verify-icon"
 if [[ "${SKIP_SYSTEM_ICON_CHECK:-0}" == 1 ]]; then
   # Hosted CI runners may have no interactive icon service. Keep structural validation enabled.
-  build/verify-icon "$MOUNTED_APP" --structural
+  "$BUILD_DIR/verify-icon" "$MOUNTED_APP" --structural
 else
-  build/verify-icon "$MOUNTED_APP" build/verified-dmg-icon.png
+  "$BUILD_DIR/verify-icon" "$MOUNTED_APP" "$BUILD_DIR/verified-dmg-icon.png"
 fi
 python3 scripts/checksums.py --verify
-echo 'PASS: DMG, version, signature, icon, privacy checks and installation contents.'
+echo "PASS: $MACOS_ARCH DMG, version, signature, icon, privacy checks and installation contents."

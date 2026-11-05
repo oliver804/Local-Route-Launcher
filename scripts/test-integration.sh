@@ -17,5 +17,5 @@ PY
 codesign --force --sign - --timestamp=none "$FIXTURE"
 swiftc "${SWIFT_FLAGS[@]}" -D TEST_FIXTURE -parse-as-library \
   Sources/Localization.swift Sources/AdditionalTranslations.swift Sources/ProxyCore.swift Sources/ReleaseUpdate.swift Sources/LauncherModel.swift Tests/LaunchIntegration.swift \
-  -framework SwiftUI -framework AppKit -o build/launch-integration
-build/launch-integration "$FIXTURE"
+  -framework SwiftUI -framework AppKit -o "$BUILD_DIR/launch-integration"
+"$BUILD_DIR/launch-integration" "$FIXTURE"

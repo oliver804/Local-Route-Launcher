@@ -14,6 +14,16 @@ struct ReleaseVersion: Comparable, Equatable {
 }
 
 struct ReleaseUpdate: Equatable {
+    enum MacArchitecture: String, CaseIterable {
+        case arm64, x86_64
+        static var current: Self {
+            #if arch(x86_64)
+            return .x86_64
+            #else
+            return .arm64
+            #endif
+        }
+    }
     static let repository = "https://github.com/oliver804/Local-Route-Launcher"
     static let releasesURL = URL(string: repository + "/releases")!
     static let apiURL = URL(string: "https://api.github.com/repos/oliver804/Local-Route-Launcher/releases/latest")!
@@ -24,13 +34,13 @@ struct ReleaseUpdate: Equatable {
     var availableDownload: URL? { isNewer ? downloadURL : nil }
     private struct Asset: Decodable { let name: String; let browser_download_url: String }
     private struct Payload: Decodable { let tag_name: String; let draft: Bool; let prerelease: Bool; let html_url: String; let assets: [Asset]? }
-    static func parse(_ data: Data, current: String) throws -> Self {
+    static func parse(_ data: Data, current: String, architecture: MacArchitecture = .current) throws -> Self {
         let payload = try JSONDecoder().decode(Payload.self, from: data)
         guard !payload.draft, !payload.prerelease, let latest = ReleaseVersion(payload.tag_name), let installed = ReleaseVersion(current),
               payload.html_url == repository + "/releases/tag/" + payload.tag_name,
               let url = URL(string: payload.html_url) else { throw URLError(.cannotParseResponse) }
         let version = payload.tag_name.hasPrefix("v") ? String(payload.tag_name.dropFirst()) : payload.tag_name
-        let name = "Local-Route-Launcher-\(version)-arm64.dmg"
+        let name = "Local-Route-Launcher-\(version)-\(architecture.rawValue).dmg"
         let expected = repository + "/releases/download/" + payload.tag_name + "/" + name
         let asset = payload.assets?.first { $0.name == name && $0.browser_download_url == expected }
         return Self(version: payload.tag_name, url: url, isNewer: latest > installed, downloadURL: asset.flatMap { URL(string: $0.browser_download_url) })

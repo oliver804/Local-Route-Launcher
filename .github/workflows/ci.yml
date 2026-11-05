@@ -15,16 +15,26 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: macos-15
+          - arch: x86_64
+            runner: macos-15-intel
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 20
     env:
       SKIP_SYSTEM_ICON_CHECK: '1'
+      MACOS_ARCH: ${{ matrix.arch }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
       - name: Check source and test core behavior
         run: |
+          test "$(uname -m)" = "$MACOS_ARCH"
           make check
           make test
       - name: Build release files
@@ -33,11 +43,11 @@ jobs:
         run: make verify
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: release-files-arm64
+          name: release-files-${{ matrix.arch }}
           path: |
             dist/*/*.dmg
             dist/*/*-source.zip
-            dist/*/SHA256SUMS.txt
+            dist/*/SHA256SUMS-*.txt
           if-no-files-found: error
           retention-days: 7
 

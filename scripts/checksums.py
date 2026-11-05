@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 import hashlib
+import os
+import platform
 import sys
 from project_files import ROOT, version
 
 release = ROOT / 'dist' / version()
-names = [f'Local-Route-Launcher-{version()}-arm64.dmg', f'Local-Route-Launcher-{version()}-source.zip']
+arch = os.environ.get('MACOS_ARCH', platform.machine())
+if arch not in ('arm64', 'x86_64'):
+    raise SystemExit('MACOS_ARCH must be arm64 or x86_64')
+names = [f'Local-Route-Launcher-{version()}-{arch}.dmg', f'Local-Route-Launcher-{version()}-source.zip']
 text = ''.join(f'{hashlib.sha256((release / name).read_bytes()).hexdigest()}  {name}\n' for name in names)
-manifest = release / 'SHA256SUMS.txt'
+# Platform builds must not overwrite each other's manifests. The release job
+# generates SHA256SUMS.txt from all validated platform assets.
+manifest = release / f'SHA256SUMS-{arch}.txt'
 if '--verify' in sys.argv:
     if manifest.read_text() != text:
         raise SystemExit('Checksum mismatch')

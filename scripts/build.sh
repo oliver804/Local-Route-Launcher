@@ -27,12 +27,13 @@ info.update(CFBundleShortVersionString=version, CFBundleVersion=version)
 (app / 'Contents/Info.plist').write_bytes(plistlib.dumps(info, sort_keys=False))
 PY
 cp Resources/Credits.html LICENSE THIRD_PARTY_NOTICES.md "$APP_PATH/Contents/Resources/"
-swiftc "${SWIFT_FLAGS[@]}" -parse-as-library Sources/BrandMark.swift scripts/make-icon.swift \
-  -framework SwiftUI -framework AppKit -o build/make-icon
+swiftc "${HOST_SWIFT_FLAGS[@]}" -parse-as-library Sources/BrandMark.swift scripts/make-icon.swift \
+  -framework SwiftUI -framework AppKit -o "$BUILD_DIR/make-icon"
 ICON_FILE="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIconFile' "$APP_PATH/Contents/Info.plist")"
-build/make-icon "$APP_PATH/Contents/Resources/$ICON_FILE"
+"$BUILD_DIR/make-icon" "$APP_PATH/Contents/Resources/$ICON_FILE"
 strip -S "$APP_PATH/Contents/MacOS/LocalRouteLauncher"
 codesign --force --sign - --timestamp=none "$APP_PATH"
 codesign --verify --deep --strict "$APP_PATH"
 python3 scripts/privacy-check.py --bundle "$APP_PATH"
-echo "Built Local Route Launcher $PROJECT_VERSION (arm64)."
+test "$(lipo -archs "$APP_PATH/Contents/MacOS/LocalRouteLauncher")" = "$MACOS_ARCH"
+echo "Built Local Route Launcher $PROJECT_VERSION ($MACOS_ARCH)."

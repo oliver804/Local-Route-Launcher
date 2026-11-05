@@ -11,9 +11,10 @@ SITE = ROOT / 'build' / 'site'
 VERSION = (ROOT / 'VERSION').read_text().strip()
 BASE_URL = 'https://oliver804.github.io/Local-Route-Launcher/'
 LOCALES = {'zh-CN': BASE_URL, 'en': BASE_URL + 'en/', 'x-default': BASE_URL}
-ARTICLE_LOCALES = {'zh-CN': BASE_URL + 'blog/v1.4.0/',
-                   'en': BASE_URL + 'en/blog/v1.4.0/',
-                   'x-default': BASE_URL + 'blog/v1.4.0/'}
+ARTICLE_LOCALES = {version: {'zh-CN': BASE_URL + f'blog/v{version}/',
+                            'en': BASE_URL + f'en/blog/v{version}/',
+                            'x-default': BASE_URL + f'blog/v{version}/'}
+                   for version in ('1.4.0', '1.4.1')}
 ANALYTICS_SCRIPT = 'https://www.googletagmanager.com/gtag/js?id=G-EKDF5J9PFF'
 
 
@@ -86,20 +87,25 @@ class Page(HTMLParser):
 
 def main():
     pages = {path.resolve(): Page(path) for path in SITE.rglob('*.html')}
-    assert len(pages) == 4, 'Expected Chinese and English home and release article pages'
+    assert len(pages) == 6, 'Expected Chinese and English home and release article pages'
     assert {p.locale for p in pages.values()} == {'zh-CN', 'en'}
-    release = f'https://github.com/oliver804/Local-Route-Launcher/releases/download/v{VERSION}/Local-Route-Launcher-{VERSION}-arm64.dmg'
-    windows_release = f'https://github.com/oliver804/Local-Route-Launcher/releases/download/v{VERSION}/Local-Route-Launcher-{VERSION}-windows-x64-setup.exe'
     for path, page in pages.items():
-        is_article = 'blog' in path.relative_to(SITE.resolve()).parts
-        locales = ARTICLE_LOCALES if is_article else LOCALES
+        parts = path.relative_to(SITE.resolve()).parts
+        is_article = 'blog' in parts
+        version = parts[parts.index('blog') + 1].removeprefix('v') if is_article else VERSION
+        locales = ARTICLE_LOCALES[version] if is_article else LOCALES
+        base = f'https://github.com/oliver804/Local-Route-Launcher/releases/download/v{version}/Local-Route-Launcher-{version}-'
+        suffixes = ['arm64.dmg', 'windows-x64-setup.exe']
+        if version != '1.4.0':
+            suffixes.append('x86_64.dmg')
+        downloads = {base + suffix for suffix in suffixes}
         assert page.h1_count == 1, 'Expected one primary heading'
         assert page.analytics_count == 1, 'Expected one Google tag per page'
         assert path.read_text().count("gtag('config', 'G-EKDF5J9PFF');") == 1, 'Missing or duplicate Analytics configuration'
         assert 'clarity-tracking' in page.ids, 'Missing Clarity loader'
         assert path.read_text().count('"https://www.clarity.ms/tag/"+i') == 1, 'Missing or duplicate Clarity script injection'
         assert path.read_text().count('})(window, document, "clarity", "script", "z5pd48bgrz");') == 1, 'Incorrect Clarity project configuration'
-        assert len(page.downloads) == (2 if is_article else 4) and set(page.downloads) == {release, windows_release}, 'Wrong release link'
+        assert len(page.downloads) == len(downloads) * (1 if is_article else 2) and set(page.downloads) == downloads, 'Wrong release link'
         assert page.canonical == locales[page.locale], 'Incorrect canonical URL'
         assert page.alternates == locales, 'Incomplete reciprocal language links'
         assert page.meta.get('description'), 'Missing search description'
@@ -127,7 +133,7 @@ def main():
             assert app['image'].startswith(BASE_URL) and (SITE / app['image'].removeprefix(BASE_URL)).is_file()
         else:
             assert app['@type'] == 'SoftwareApplication' and app['name'] == 'Local Route Launcher'
-            assert app['softwareVersion'] == VERSION and set(app['downloadUrl']) == {release, windows_release}, 'Stale app schema'
+            assert app['softwareVersion'] == VERSION and set(app['downloadUrl']) == downloads, 'Stale app schema'
             assert app['url'] == page.canonical and app['offers']['price'] == 0
             assert app['description'] == page.meta['description'], 'App description differs from page metadata'
             assert len(app['operatingSystem']) == 2 and app['featureList'] and app['softwareRequirements'], 'Missing app compatibility or features'
@@ -152,18 +158,18 @@ def main():
         print(f'PASS: {path.relative_to(SITE.resolve())}: links, assets, locale, downloads and SEO metadata')
     ns = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9', 'x': 'http://www.w3.org/1999/xhtml'}
     entries = ET.parse(SITE / 'sitemap.xml').getroot().findall('s:url', ns)
-    assert len(entries) == 4 and {e.findtext('s:loc', namespaces=ns) for e in entries} == set(LOCALES.values()) | set(ARTICLE_LOCALES.values())
+    assert len(entries) == 6 and {e.findtext('s:loc', namespaces=ns) for e in entries} == set(LOCALES.values()).union(*(set(values.values()) for values in ARTICLE_LOCALES.values()))
     for entry in entries:
         loc = entry.findtext('s:loc', namespaces=ns)
-        locales = ARTICLE_LOCALES if '/blog/' in loc else LOCALES
+        locales = ARTICLE_LOCALES[loc.split('/blog/v')[1].rstrip('/')] if '/blog/' in loc else LOCALES
         alternates = {link.attrib['hreflang']: link.attrib['href'] for link in entry.findall('x:link', ns)}
         assert alternates == locales, 'Sitemap language links differ from pages'
     expected = {'index.html', 'en/index.html', 'blog/v1.4.0/index.html',
-                'en/blog/v1.4.0/index.html', 'style.css', 'app.js', '.nojekyll',
+                'en/blog/v1.4.0/index.html', 'blog/v1.4.1/index.html', 'en/blog/v1.4.1/index.html', 'style.css', 'app.js', '.nojekyll',
                 'sitemap.xml', 'assets/icon.png', 'assets/preview-dark.png', 'assets/preview-light.png', 'assets/preview-dark.en.png', 'assets/preview-light.en.png', 'assets/windows-dark.png', 'assets/windows-light.png', 'assets/windows-dark.en.png', 'assets/windows-light.en.png'}
     actual = {str(p.relative_to(SITE)) for p in SITE.rglob('*') if p.is_file()}
     assert actual == expected, 'Unexpected or missing deployed files'
-    print('PASS: bilingual sitemap and deployment allowlist (seventeen public files)')
+    print('PASS: bilingual sitemap and deployment allowlist (nineteen public files)')
 
 
 if __name__ == '__main__':
