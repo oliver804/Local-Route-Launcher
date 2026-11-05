@@ -27,10 +27,15 @@ info.update(CFBundleShortVersionString=version, CFBundleVersion=version)
 (app / 'Contents/Info.plist').write_bytes(plistlib.dumps(info, sort_keys=False))
 PY
 cp Resources/Credits.html LICENSE THIRD_PARTY_NOTICES.md "$APP_PATH/Contents/Resources/"
-swiftc "${HOST_SWIFT_FLAGS[@]}" -parse-as-library Sources/BrandMark.swift scripts/make-icon.swift \
-  -framework SwiftUI -framework AppKit -o "$BUILD_DIR/make-icon"
 ICON_FILE="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIconFile' "$APP_PATH/Contents/Info.plist")"
-"$BUILD_DIR/make-icon" "$APP_PATH/Contents/Resources/$ICON_FILE"
+if [[ -n "${PREBUILT_ICON_PATH:-}" ]]; then
+  # CI renders this architecture-independent artwork once on its GPU-capable
+  # Apple Silicon job, then shares that same artifact with both native builds.
+  test -f "$PREBUILT_ICON_PATH"
+  cp "$PREBUILT_ICON_PATH" "$APP_PATH/Contents/Resources/$ICON_FILE"
+else
+  bash scripts/build-icon.sh "$APP_PATH/Contents/Resources/$ICON_FILE"
+fi
 strip -S "$APP_PATH/Contents/MacOS/LocalRouteLauncher"
 codesign --force --sign - --timestamp=none "$APP_PATH"
 codesign --verify --deep --strict "$APP_PATH"

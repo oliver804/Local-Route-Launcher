@@ -38,6 +38,8 @@ macOS 构建按架构输出到 `build/release/arm64/` 和 `build/release/x86_64/
 
 校验文件使用相对文件名。在产物目录运行 `shasum -a 256 -c SHA256SUMS.txt` 可验证完整性。应用内包含作者信息与许可证；默认签名为 ad-hoc，未公证。
 
+CI 在具备图形渲染能力的 Apple Silicon runner 上从 `Sources/BrandMark.swift` 生成一次 ICNS，两个原生构建通过同一次工作流的产物共享图标，避免无 GPU 的 Intel 虚拟机触发 Metal 错误。应用二进制仍分别原生编译，图标样式不变。
+
 ## 后续版本
 
 修改 `VERSION`，同步 README 中的版本/下载示例与 `CHANGELOG.md`，并检查安全支持政策。安装包名称、应用版本和校验文件由脚本自动生成。不要使用旧工作目录中的历史 DMG，也不要手动更改已发布版本的二进制文件。

@@ -38,6 +38,8 @@ macOS app bundles are isolated under `build/release/arm64/` and `build/release/x
 
 The checksum file uses relative filenames. Run `shasum -a 256 -c SHA256SUMS.txt` inside that directory to verify integrity. The app includes credits and its license. Default packages are ad-hoc signed, not notarized.
 
+CI renders the ICNS once from `Sources/BrandMark.swift` on the GPU-capable Apple Silicon runner and shares that same-run artifact with both native builds. This avoids Metal failures on headless Intel virtual machines without changing the artwork or cross-compiling release binaries.
+
 ## Subsequent releases
 
 Update `VERSION`, README version/download examples, and `CHANGELOG.md`; review the security support policy. Scripts generate app versions, release filenames, and checksums. Do not reuse old DMGs or silently replace binaries of an existing published version.

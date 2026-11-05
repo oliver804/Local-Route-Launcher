@@ -8,7 +8,22 @@ concurrency:
   group: release-${{ github.ref }}
   cancel-in-progress: false
 jobs:
+  brand-icon:
+    runs-on: macos-15
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Render shared artwork on a GPU-capable runner
+        run: bash scripts/build-icon.sh
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: brand-icon
+          path: build/brand-icon/AppIcon.icns
+          if-no-files-found: error
   macos:
+    needs: brand-icon
     strategy:
       fail-fast: false
       matrix:
@@ -22,10 +37,15 @@ jobs:
     env:
       SKIP_SYSTEM_ICON_CHECK: '1'
       MACOS_ARCH: ${{ matrix.arch }}
+      PREBUILT_ICON_PATH: build/brand-icon/AppIcon.icns
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8
+        with:
+          name: brand-icon
+          path: build/brand-icon
       - name: Check, build and verify macOS package
         run: |
           test "$(uname -m)" = "$MACOS_ARCH"
