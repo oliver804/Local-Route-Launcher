@@ -365,8 +365,10 @@ private struct UpdateIndicator: View {
     var body: some View {
         HStack(spacing: 7) {
             Text("v\(store.updates.version)").font(.system(size: 10)).foregroundStyle(.secondary)
-            if let release = store.updates.release, let download = release.availableDownload {
-                Button { NSWorkspace.shared.open(download) } label: {
+            if !store.updates.checking, let release = store.updates.release, release.availableDownload != nil {
+                Button {
+                    Task { await store.updates.downloadLatest { NSWorkspace.shared.open($0) } }
+                } label: {
                     Label(store.current.text("有更新"), systemImage: "arrow.up.circle")
                         .font(.system(size: 10)).padding(.horizontal, 6).padding(.vertical, 4)
                         .background(Palette.accent.opacity(0.09), in: RoundedRectangle(cornerRadius: 6))

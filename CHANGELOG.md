@@ -1,5 +1,12 @@
 # Changelog / 更新日志
 
+## 1.4.3 — 2026-11-09
+
+- Refresh the latest stable GitHub release when the update badge is clicked, then open its validated platform/architecture installer instead of the URL cached at startup.
+- Never fall back to an old installer after a failed, cancelled or overlapping refresh, or when the latest release lacks a matching installer; request cache revalidation and deduplicate concurrent main/menu/tray clicks.
+- Add macOS model and installed Windows UI regression coverage for stale badges, unavailable installers, network failures, cancellation and repeated clicks. Keep the existing compact UI and direct-download behavior.
+- 修复“有更新”下载此前检测到的旧版本：点击时重新查询最新稳定版，校验后下载；失败时不回退旧链接。
+
 ## 1.4.2 — 2026-11-09
 
 - Lower the Windows installer minimum from Windows 10 22H2 (19045) to 1809 (17763), removing the installation block on 21H2 and corresponding LTSC editions; retain Windows 11 and x64 packaging.

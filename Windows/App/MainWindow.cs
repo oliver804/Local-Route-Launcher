@@ -404,7 +404,7 @@ public sealed partial class MainWindow : Window
         menu.Items.Add("GitHub", null, (_, _) => OpenRepository());
         menu.Items.Add(T("Check"), null, (_, _) => { Reveal(); Check(); });
         menu.Items.Add(T("Quit"), null, (_, _) => { if (!busy) Quit(); });
-        if (UpdateAvailable) menu.Items.Add(T("UpdateAvailable"), null, (_, _) => DownloadUpdate());
+        if (UpdateAvailable) menu.Items.Add(T("UpdateAvailable"), null, async (_, _) => await DownloadUpdate());
         tray.ContextMenuStrip = menu; tray.DoubleClick += (_, _) => Reveal();
         tray.MouseClick += (_, e) => { if (e.Button == Forms.MouseButtons.Left) ShowTrayPanel(); };
     }

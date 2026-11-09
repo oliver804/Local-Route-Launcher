@@ -9,7 +9,7 @@
 3. 原作者的公开提交身份使用 `Oliver <oliver804x@gmail.com>`。其他贡献者使用各自愿意公开的姓名和邮箱；不复用 Oliver 身份。
 4. 将本地仓库关联到你实际创建的远端，再推送 `main`。
 5. 在 GitHub Actions 中确认 CI 成功，手动检查发布内容。
-6. 给经审核的提交打标签 `v1.4.2`，然后将该标签推送到远端。
+6. 给经审核的提交打标签 `v1.4.3`，然后将该标签推送到远端。
 
 `v*` 标签会运行 Release 工作流：检查标签与 `VERSION` 一致、执行源码与核心检查、构建并验证 DMG、导出纯净源码包，最后创建带附件的 **草稿 Release**。在 GitHub 检查草稿说明和文件后，再手动点击 Publish release。工作流使用当前仓库的临时 `GITHUB_TOKEN`，无需把个人令牌写入项目。
 
@@ -26,12 +26,12 @@ MACOS_ARCH=arm64 make dmg verify
 MACOS_ARCH=x86_64 make dmg verify
 ```
 
-只上传 `dist/1.4.2/` 中以下五个文件：
+只上传 `dist/1.4.3/` 中以下五个文件：
 
-- `Local-Route-Launcher-1.4.2-arm64.dmg`
-- `Local-Route-Launcher-1.4.2-x86_64.dmg`
-- `Local-Route-Launcher-1.4.2-windows-x64-setup.exe`
-- `Local-Route-Launcher-1.4.2-source.zip`
+- `Local-Route-Launcher-1.4.3-arm64.dmg`
+- `Local-Route-Launcher-1.4.3-x86_64.dmg`
+- `Local-Route-Launcher-1.4.3-windows-x64-setup.exe`
+- `Local-Route-Launcher-1.4.3-source.zip`
 - `SHA256SUMS.txt`
 
 macOS 构建按架构输出到 `build/release/arm64/` 和 `build/release/x86_64/`。本地分别生成 `SHA256SUMS-arm64.txt` 与 `SHA256SUMS-x86_64.txt`；发布工作流在 Apple Silicon 和 Intel 原生 runner 上各自构建、测试和验证 DMG，再与 Windows 安装包、单份源码包一起生成 `SHA256SUMS.txt`。跨架构运行测试需要目标指令集支持（Apple Silicon 上运行 Intel 测试需要 Rosetta）。

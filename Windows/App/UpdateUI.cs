@@ -47,7 +47,7 @@ public sealed partial class MainWindow
             StrokeStartLineCap = PenLineCap.Round, StrokeEndLineCap = PenLineCap.Round, StrokeLineJoin = PenLineJoin.Round });
         return new Viewbox { Width = 17, Height = 17, Child = canvas };
     }
-    private bool UpdateAvailable => updateRelease?.AvailableDownload != null;
+    private bool UpdateAvailable => !updateChecking && updateRelease?.AvailableDownload != null;
     private Button UpdateButton()
     {
         var label = new StackPanel { Orientation = Orientation.Horizontal };
@@ -59,17 +59,21 @@ public sealed partial class MainWindow
         var button = new Button { Style = roundedButtonStyle, Content = label, ToolTip = T("UpdateAvailable"), Foreground = accent, Background = field, BorderThickness = new Thickness(0),
             FontSize = 10, Padding = new Thickness(6, 4, 6, 4), Margin = new Thickness(6, 0, 0, 0), Visibility = UpdateAvailable ? Visibility.Visible : Visibility.Collapsed };
         AutomationProperties.SetName(button, T("UpdateAvailable"));
-        button.Click += (_, _) => DownloadUpdate();
+        button.Click += async (_, _) => await DownloadUpdate();
         updateButtons.RemoveAll(b => !b.IsLoaded);
         updateButtons.Add(button); return button;
     }
-    private async Task CheckUpdates()
+    private async Task<ReleaseUpdate?> CheckUpdates(Func<string, CancellationToken, Task<ReleaseUpdate>>? fetch = null)
     {
-        if (updateChecking || smoke) return;
+        if (updateChecking || quitting || updateCancellation.IsCancellationRequested || (smoke && fetch == null)) return null;
         updateChecking = true; RefreshUpdateUI();
-        try { updateRelease = await ReleaseUpdate.Fetch(Program.Version, updateCancellation.Token); }
-        catch (OperationCanceledException) when (updateCancellation.IsCancellationRequested) { return; }
-        catch { updateRelease = null; }
+        try {
+            var latest = await (fetch ?? ReleaseUpdate.Fetch)(Program.Version, updateCancellation.Token);
+            updateCancellation.Token.ThrowIfCancellationRequested();
+            updateRelease = latest;
+            return latest;
+        }
+        catch { updateRelease = null; return null; }
         finally { updateChecking = false; if (!quitting) RefreshUpdateUI(); }
     }
     private void RefreshUpdateUI()
@@ -77,10 +81,16 @@ public sealed partial class MainWindow
         foreach (var button in updateButtons) button.Visibility = UpdateAvailable ? Visibility.Visible : Visibility.Collapsed;
         SetupTray();
     }
-    private void DownloadUpdate()
+    private async Task DownloadUpdate(Func<string, CancellationToken, Task<ReleaseUpdate>>? fetch = null, Action<string>? open = null)
     {
-        if (updateRelease?.AvailableDownload is not string url) return;
-        try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true }); }
+        if (smoke && open == null) return;
+        // Resolve on click; a failure or a concurrent check must never reuse the badge's old URL.
+        var latest = await CheckUpdates(fetch);
+        if (quitting || updateCancellation.IsCancellationRequested || latest?.AvailableDownload is not string url) return;
+        try {
+            if (open != null) open(url);
+            else System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+        }
         catch { MessageBox.Show(T("OperationFailed"), "Local Route Launcher"); }
     }
     private Button AuxiliaryButton(string label, Action action)

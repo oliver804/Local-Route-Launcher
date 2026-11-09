@@ -71,8 +71,57 @@ enum UpdateTests {
         let first = Task { await model.check { _ in calls += 1; try await Task.sleep(nanoseconds: 100_000_000); return release } }
         await Task.yield()
         await model.check { _ in calls += 1; return release }
-        await first.value
+        _ = await first.value
         check(calls == 1, "Deduplicate concurrent checks")
+        let stale = try ReleaseUpdate.parse(installer("v1.4.1"), current: "1.4.0")
+        let latest = try ReleaseUpdate.parse(installer("v1.4.2"), current: "1.4.0")
+        var opened: [URL] = []
+        await model.check { _ in stale }
+        await model.downloadLatest(fetch: { current in
+            check(current == "1.4.0", "Recheck uses installed version")
+            return latest
+        }, open: { opened.append($0) })
+        check(opened == [latest.availableDownload!], "Click downloads 1.4.2, not cached 1.4.1")
+        check(model.release == latest, "Click refreshes shared badge state")
+        for tag in ["v1.4.0", "v1.3.0", "v1.4.2"] {
+            await model.check { _ in stale }; opened = []
+            let data = try tag == "v1.4.2" ? payload(tag) : installer(tag)
+            await model.downloadLatest(fetch: { _ in try ReleaseUpdate.parse(data, current: "1.4.0") }, open: { opened.append($0) })
+            check(opened.isEmpty && model.release?.availableDownload == nil, "No fallback for current, older or missing installer")
+        }
+        for data in [Data("{}".utf8), try payload("v1.4.2", prerelease: true), try installer("v1.4.2", url: "https://example.com/setup.dmg")] {
+            await model.check { _ in stale }; opened = []
+            await model.downloadLatest(fetch: { _ in try ReleaseUpdate.parse(data, current: "1.4.0") }, open: { opened.append($0) })
+            check(opened.isEmpty && model.release?.availableDownload == nil, "Reject invalid latest response without cached fallback")
+        }
+        for error in [URLError(.timedOut), URLError(.notConnectedToInternet), URLError(.badServerResponse)] {
+            await model.check { _ in stale }; opened = []
+            await model.downloadLatest(fetch: { _ in throw error }, open: { opened.append($0) })
+            check(opened.isEmpty && model.failed && model.release == nil, "Fetch failure never opens stale installer")
+        }
+        // Hold the request open to reproduce rapid clicks from the main/menu controls.
+        await model.check { _ in stale }; opened = []; calls = 0
+        var resume: CheckedContinuation<ReleaseUpdate, Never>?
+        let download = Task { await model.downloadLatest(fetch: { _ in
+            calls += 1
+            return await withCheckedContinuation { resume = $0 }
+        }, open: { opened.append($0) }) }
+        while resume == nil { await Task.yield() }
+        check(model.checking, "Shared check remains in flight")
+        await model.downloadLatest(fetch: { _ in calls += 1; return stale }, open: { opened.append($0) })
+        check(calls == 1 && opened.isEmpty, "Concurrent click cannot use cached result")
+        resume!.resume(returning: latest)
+        await download.value
+        check(opened == [latest.availableDownload!] && !model.checking, "One browser launch for concurrent clicks")
+        // Even a fetch implementation that ignores cancellation cannot open a browser afterward.
+        await model.check { _ in stale }; opened = []; resume = nil
+        let cancelled = Task { await model.downloadLatest(fetch: { _ in
+            await withCheckedContinuation { resume = $0 }
+        }, open: { opened.append($0) }) }
+        while resume == nil { await Task.yield() }
+        cancelled.cancel(); resume!.resume(returning: latest)
+        await cancelled.value
+        check(opened.isEmpty && model.release == nil && !model.checking, "Cancelled refresh cannot download")
         print("PASS: \(count) update checks")
     }
 }

@@ -47,13 +47,14 @@ public static class Program
                         Capture(windowApp, Path.Combine(args[1], $"windows-{language}-{theme}.png"), AppLanguages.IsRightToLeft(language));
                         windowApp.VerifyAuxiliaryPanels(args[1], language, theme);
                     }
+                    await windowApp.VerifyUpdateDownloads();
                     windowApp.VerifyProfiles();
                     await windowApp.VerifyBusyControls();
                     windowApp.Close();
                     if (windowApp.IsVisible || windowApp.ShowInTaskbar) throw new InvalidOperationException("Close did not hide the window from the taskbar.");
                     windowApp.Reveal();
                     if (!windowApp.IsVisible || !windowApp.ShowInTaskbar) throw new InvalidOperationException("Reopen failed.");
-                    File.WriteAllText(Path.Combine(args[1], "ui-result.txt"), "PASS: localized main/tray renders; update badge visibility and installer selection; busy controls; preference guards; draft preservation; close-to-tray; reopen.");
+                    File.WriteAllText(Path.Combine(args[1], "ui-result.txt"), "PASS: localized main/tray renders; update badge visibility, fresh download resolution, failure/cancellation and click deduplication; busy controls; preference guards; draft preservation; close-to-tray; reopen.");
                     windowApp.Quit();
                 }
                 catch (Exception ex) { File.WriteAllText(Path.Combine(args[1], "ui-failure.txt"), ex.ToString()); app.Shutdown(1); }

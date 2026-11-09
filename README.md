@@ -2,7 +2,7 @@
 <p align="center">管理应用启动网络配置的 macOS / Windows 工具</p>
 
 <p align="center">
-  <a href="https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.2"><img src="https://img.shields.io/badge/version-1.4.2-168570" alt="Version 1.4.2"></a>
+  <a href="https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.3"><img src="https://img.shields.io/badge/version-1.4.3-168570" alt="Version 1.4.3"></a>
   <img src="https://img.shields.io/badge/macOS-13%2B-333333" alt="macOS 13+">
   <img src="https://img.shields.io/badge/macOS-arm64_%7C_x86__64-333333" alt="Apple Silicon and Intel">
   <img src="https://img.shields.io/badge/Windows-10%2F11_x64-0078D4" alt="Windows 10 / 11 x64">
@@ -11,14 +11,14 @@
 <p align="center">
   <b>简体中文</b> · <a href="README.en.md">English</a><br>
   <a href="https://oliver804.github.io/Local-Route-Launcher/">官网</a> ·
-  <a href="https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.2">下载安装</a> ·
+  <a href="https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.3">下载安装</a> ·
   <a href="https://oliver804.github.io/Local-Route-Launcher/blog/v1.4.2/">版本文章</a> ·
   <a href="#快速开始">快速开始</a> ·
   <a href="#常见问题">常见问题</a> ·
   <a href="https://github.com/oliver804/Local-Route-Launcher/issues">反馈问题</a>
 </p>
 
-> 当前稳定版：[v1.4.2](https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.2)。支持 ChatGPT、Antigravity App 和 Antigravity IDE 独立配置。
+> 当前稳定版：[v1.4.3](https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.3)。支持 ChatGPT、Antigravity App 和 Antigravity IDE 独立配置。
 
 ## Preview
 
@@ -69,13 +69,13 @@ Local Route Launcher 保存本地 HTTP 代理设置，并在启动兼容的 Elec
 
 | 版本 | 运行环境 | 下载 |
 | --- | --- | --- |
-| **v1.4.2** | Apple Silicon · macOS 13+ | [下载 DMG](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-arm64.dmg) |
-| **v1.4.2** | Intel · x86_64 · macOS 13+ | [下载 DMG](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-x86_64.dmg) |
-| **v1.4.2** | Windows 10 1809+ / Windows 11 · x64 | [下载 EXE 安装包](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-windows-x64-setup.exe) |
+| **v1.4.3** | Apple Silicon · macOS 13+ | [下载 DMG](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-arm64.dmg) |
+| **v1.4.3** | Intel · x86_64 · macOS 13+ | [下载 DMG](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-x86_64.dmg) |
+| **v1.4.3** | Windows 10 1809+ / Windows 11 · x64 | [下载 EXE 安装包](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-windows-x64-setup.exe) |
 
 在苹果菜单 →「关于本机」查看芯片：Apple M 系列选 **arm64**，Intel 处理器选 **x86_64**。两种安装包都要求 macOS 13+。
 
-打开 DMG，将 **Local Route Launcher** 拖入 **Applications（应用程序）**。[发布页面](https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.2)同时提供源码包和 SHA-256 校验文件。
+打开 DMG，将 **Local Route Launcher** 拖入 **Applications（应用程序）**。[发布页面](https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.3)同时提供源码包和 SHA-256 校验文件。
 
 > 支持可识别的 **Electron 版 ChatGPT、Antigravity App 和 Antigravity IDE**，目标应用也必须提供适用于本机芯片的版本；Intel Mac 需要目标应用的 Intel 或通用版本，启动器不能让仅支持 Apple Silicon 的应用在 Intel 上运行。旧版原生 ChatGPT 仍不支持。
 
@@ -147,7 +147,7 @@ HTTP 403 只能说明隧道与 TLS 检查取得了响应，不代表聊天或账
 <details>
 <summary><b>“有更新”何时出现？点击后会直接安装吗？</b></summary>
 
-仅当 GitHub 有高于当前版本的稳定版，且提供当前平台安装包时才出现。点击会在默认浏览器下载安装包；安装仍需自行完成。离线或无新版时不会打扰使用。
+仅当 GitHub 有高于当前版本的稳定版，且提供当前平台安装包时才出现。点击会在默认浏览器下载安装包；安装仍需自行完成。离线或无新版时不会打扰使用。 点击时会重新查询最新稳定版，不使用之前检测结果中的旧下载链接；查询失败时不回退旧版本。
 
 </details>
 
@@ -163,7 +163,7 @@ make dmg         # 生成 DMG、源码 ZIP 和校验文件
 make verify      # 验证安装包、签名与图标
 ```
 
-应用输出到 `build/release/<architecture>/`，发布文件输出到 `dist/1.4.2/`。[`VERSION`](VERSION) 是构建版本的唯一来源。
+应用输出到 `build/release/<architecture>/`，发布文件输出到 `dist/1.4.3/`。[`VERSION`](VERSION) 是构建版本的唯一来源。
 
 `make integration`、`make ui` 需要已登录的 macOS 图形会话，仅操作独立测试应用与窗口；`make previews` 可生成模拟数据界面预览。
 
@@ -175,7 +175,7 @@ make verify      # 验证安装包、签名与图标
 ./scripts/build-windows.ps1 -Test
 ```
 
-安装包输出到 `dist/1.4.2/`。测试使用隔离应用，不操作真实 ChatGPT 账号。
+安装包输出到 `dist/1.4.3/`。测试使用隔离应用，不操作真实 ChatGPT 账号。
 
 欢迎提交 [Issue](https://github.com/oliver804/Local-Route-Launcher/issues) 或 PR。开发细节参见[贡献指南](CONTRIBUTING.md)、[架构说明](docs/ARCHITECTURE.md)和[发布指南](docs/RELEASING.md)。
 

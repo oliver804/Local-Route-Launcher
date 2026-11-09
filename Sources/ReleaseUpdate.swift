@@ -53,7 +53,8 @@ struct ReleaseUpdate: Equatable {
         configuration.urlCache = nil
         let session = URLSession(configuration: configuration)
         defer { session.invalidateAndCancel() }
-        var request = URLRequest(url: apiURL)
+        var request = URLRequest(url: apiURL, cachePolicy: .reloadIgnoringLocalCacheData)
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
         request.setValue("Local-Route-Launcher", forHTTPHeaderField: "User-Agent")
         let (data, response) = try await session.data(for: request)

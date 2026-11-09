@@ -9,7 +9,7 @@
 3. The original author's public commit identity is `Oliver <oliver804x@gmail.com>`. Contributors should use their own public identity, not Oliver's.
 4. Add the remote URL of the repository you created and push `main`.
 5. Confirm GitHub Actions CI passes and review the release contents.
-6. Tag the reviewed commit `v1.4.2` and push that tag.
+6. Tag the reviewed commit `v1.4.3` and push that tag.
 
 A `v*` tag runs the release workflow: validate the tag against `VERSION`, run source and core checks, build and verify both macOS architectures and the Windows installer, export clean source, and create a **draft GitHub Release** with attachments. Review the draft and files before clicking Publish release. The workflow uses the repository's temporary `GITHUB_TOKEN`; never commit personal tokens.
 
@@ -26,12 +26,12 @@ MACOS_ARCH=arm64 make dmg verify
 MACOS_ARCH=x86_64 make dmg verify
 ```
 
-Upload these five files from `dist/1.4.2/`:
+Upload these five files from `dist/1.4.3/`:
 
-- `Local-Route-Launcher-1.4.2-arm64.dmg`
-- `Local-Route-Launcher-1.4.2-x86_64.dmg`
-- `Local-Route-Launcher-1.4.2-windows-x64-setup.exe`
-- `Local-Route-Launcher-1.4.2-source.zip`
+- `Local-Route-Launcher-1.4.3-arm64.dmg`
+- `Local-Route-Launcher-1.4.3-x86_64.dmg`
+- `Local-Route-Launcher-1.4.3-windows-x64-setup.exe`
+- `Local-Route-Launcher-1.4.3-source.zip`
 - `SHA256SUMS.txt`
 
 macOS app bundles are isolated under `build/release/arm64/` and `build/release/x86_64/`. Local builds write `SHA256SUMS-arm64.txt` or `SHA256SUMS-x86_64.txt`; the release workflow builds, tests and verifies each DMG on a native Apple Silicon or Intel runner, then generates `SHA256SUMS.txt` covering both DMGs, the Windows installer and one source archive. Running cross-compiled tests requires target-instruction support (Rosetta for Intel tests on Apple Silicon).

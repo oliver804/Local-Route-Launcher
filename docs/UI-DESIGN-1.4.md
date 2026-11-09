@@ -22,7 +22,8 @@ Accepted by Oliver on 2026-10-30. This is the implementation baseline, not a fut
 - Only Local Route Launcher updates, not ChatGPT or Antigravity updates.
 - Check the repository's stable GitHub Release at startup when enabled; preserve the existing stored startup-check preference.
 - Show “有更新” / “Update available” beside the version only when a newer stable release has the matching platform installer. Hide it when current, older, checking, offline or missing an installer.
-- Clicking opens the validated installer download URL directly in the default browser; no intermediate update panel or release-page detour. The user then runs the downloaded installer. Never silently install or overwrite the running app.
+- Clicking must first re-fetch the latest stable release and validate its matching installer; the cached badge release must never be used as the download fallback. Failed, cancelled or overlapping refreshes open nothing. Hide the badge while checking and deduplicate main/menu/tray clicks.
+- Clicking opens the freshly validated installer download URL directly in the default browser; no intermediate update panel or release-page detour. The user then runs the downloaded installer. Never silently install or overwrite the running app.
 - Offline, invalid response and rate limit failures do not interrupt launching apps. No fake version data. The v1.4.1 shown in the design proposal was illustrative only.
 - Compare numeric stable semantic versions, exclude drafts/prereleases, validate release links against the repository, use timeouts and avoid overlapping requests. No update network requests in previews/smoke tests.
 

@@ -335,11 +335,24 @@ final class UpdateModel: ObservableObject {
         self.defaults = defaults; self.version = version
         automatic = defaults.object(forKey: "checkUpdatesAtStartup") as? Bool ?? true
     }
-    func check(fetch: (String) async throws -> ReleaseUpdate = ReleaseUpdate.fetch) async {
-        guard !checking else { return }
+    @discardableResult
+    func check(fetch: (String) async throws -> ReleaseUpdate = ReleaseUpdate.fetch) async -> ReleaseUpdate? {
+        guard !checking else { return nil }
         checking = true; failed = false
         defer { checking = false }
-        do { release = try await fetch(version) }
-        catch { failed = true; release = nil }
+        do {
+            let latest = try await fetch(version)
+            try Task.checkCancellation()
+            release = latest
+            return latest
+        }
+        catch { failed = true; release = nil; return nil }
+    }
+    func downloadLatest(fetch: (String) async throws -> ReleaseUpdate = ReleaseUpdate.fetch,
+                        open: (URL) -> Void) async {
+        // The badge is only a hint. Resolve again on click, never fall back to its cached URL.
+        guard let latest = await check(fetch: fetch), !Task.isCancelled,
+              let download = latest.availableDownload else { return }
+        open(download)
     }
 }

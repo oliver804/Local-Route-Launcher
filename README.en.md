@@ -2,7 +2,7 @@
 <p align="center">App-specific launch settings for macOS and Windows</p>
 
 <p align="center">
-  <a href="https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.2"><img src="https://img.shields.io/badge/version-1.4.2-168570" alt="Version 1.4.2"></a>
+  <a href="https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.3"><img src="https://img.shields.io/badge/version-1.4.3-168570" alt="Version 1.4.3"></a>
   <img src="https://img.shields.io/badge/macOS-13%2B-333333" alt="macOS 13+">
   <img src="https://img.shields.io/badge/macOS-arm64_%7C_x86__64-333333" alt="Apple Silicon and Intel">
   <img src="https://img.shields.io/badge/Windows-10%2F11_x64-0078D4" alt="Windows 10 / 11 x64">
@@ -11,14 +11,14 @@
 <p align="center">
   <a href="README.md">简体中文</a> · <b>English</b><br>
   <a href="https://oliver804.github.io/Local-Route-Launcher/en/">Website</a> ·
-  <a href="https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.2">Download</a> ·
+  <a href="https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.3">Download</a> ·
   <a href="https://oliver804.github.io/Local-Route-Launcher/en/blog/v1.4.2/">Release article</a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#faq">FAQ</a> ·
   <a href="https://github.com/oliver804/Local-Route-Launcher/issues">Report an issue</a>
 </p>
 
-> Current stable release: [v1.4.2](https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.2), with separate profiles for ChatGPT, Antigravity App and Antigravity IDE.
+> Current stable release: [v1.4.3](https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.3), with separate profiles for ChatGPT, Antigravity App and Antigravity IDE.
 
 ## Preview
 
@@ -69,13 +69,13 @@ Interface languages: English, Simplified Chinese, Traditional Chinese, Russian, 
 
 | Version | Requirements | Download |
 | --- | --- | --- |
-| **v1.4.2** | Apple Silicon · macOS 13+ | [Download DMG](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-arm64.dmg) |
-| **v1.4.2** | Intel · x86_64 · macOS 13+ | [Download DMG](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-x86_64.dmg) |
-| **v1.4.2** | Windows 10 1809+ / Windows 11 · x64 | [Download EXE installer](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-windows-x64-setup.exe) |
+| **v1.4.3** | Apple Silicon · macOS 13+ | [Download DMG](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-arm64.dmg) |
+| **v1.4.3** | Intel · x86_64 · macOS 13+ | [Download DMG](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-x86_64.dmg) |
+| **v1.4.3** | Windows 10 1809+ / Windows 11 · x64 | [Download EXE installer](https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-windows-x64-setup.exe) |
 
 Check Apple menu → **About This Mac**: choose **arm64** for Apple M-series chips or **x86_64** for Intel processors. Both installers require macOS 13+.
 
-Open the DMG and drag **Local Route Launcher** to **Applications**. The [release page](https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.2) also provides a source archive and SHA-256 checksums.
+Open the DMG and drag **Local Route Launcher** to **Applications**. The [release page](https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.3) also provides a source archive and SHA-256 checksums.
 
 > Detectable **Electron versions of ChatGPT, Antigravity App and Antigravity IDE** are supported. Intel Macs need an Intel or Universal build of the target app; this launcher cannot run an Apple-Silicon-only app on Intel. Older native versions and Windows ARM64 remain unsupported. Restricted Microsoft Store packages may not allow direct launch.
 
@@ -146,7 +146,7 @@ Select the app in the sidebar and save its own proxy host, port and installation
 <details>
 <summary><b>When does the update badge appear? Does it install automatically?</b></summary>
 
-The badge appears only when GitHub has a newer stable release with an installer for your platform. Clicking opens the installer download in your browser; you run it yourself. Offline checks and current versions do not interrupt your work.
+The badge appears only when GitHub has a newer stable release with an installer for your platform. Clicking checks the latest stable release again before opening its matching installer in your browser; you run it yourself. A failed refresh does not fall back to a cached download. Offline checks and current versions do not interrupt your work.
 
 </details>
 
@@ -162,7 +162,7 @@ make dmg         # Create DMG, source ZIP, and checksums
 make verify      # Validate the package, signature, and icon
 ```
 
-The app is written to `build/release/<architecture>/`, and release files to `dist/1.4.2/`. [`VERSION`](VERSION) is the single build-version source.
+The app is written to `build/release/<architecture>/`, and release files to `dist/1.4.3/`. [`VERSION`](VERSION) is the single build-version source.
 
 `make integration` and `make ui` require a logged-in macOS graphical session and only operate dedicated test apps and windows. `make previews` renders previews using sample data.
 
@@ -174,7 +174,7 @@ The default build targets the host architecture. Use `MACOS_ARCH=x86_64 make dmg
 ./scripts/build-windows.ps1 -Test
 ```
 
-The installer is written to `dist/1.4.2/`. Tests use an isolated fixture, not a real ChatGPT account.
+The installer is written to `dist/1.4.3/`. Tests use an isolated fixture, not a real ChatGPT account.
 
 [Issues](https://github.com/oliver804/Local-Route-Launcher/issues) and PRs are welcome. See [Contributing](CONTRIBUTING.md), [Architecture](docs/ARCHITECTURE.en.md), and [Releasing](docs/RELEASING.en.md) for development details.
 
@@ -195,4 +195,4 @@ Antigravity probes use `https://antigravity.google/`; ChatGPT probes use `https:
 
 Local macOS checks covered App 2.28.1 and IDE 2.6.0 identification, launch arguments, and observed proxy TCP connections. No authenticated AI prompt was sent. Windows fixtures verify launch mechanics, not real Antigravity account or model access. This independent project is not affiliated with or endorsed by OpenAI or Google; product names identify compatibility only.
 
-The compact main/menu/tray layout shares language, appearance and GitHub controls at the upper right. The version-adjacent badge appears only when a newer stable launcher release has an installer for this platform. Clicking downloads that installer directly in your browser, without an intermediate panel. Run the downloaded installer to finish updating. No badge is shown otherwise; offline checks do not interrupt use. See the [UI baseline](docs/UI-DESIGN-1.4.md).
+The compact main/menu/tray layout shares language, appearance and GitHub controls at the upper right. The version-adjacent badge appears only when a newer stable launcher release has an installer for this platform. Clicking refreshes the latest stable release and downloads its matching installer directly in your browser, without an intermediate panel. Run the downloaded installer to finish updating. No badge is shown otherwise; offline checks do not interrupt use. See the [UI baseline](docs/UI-DESIGN-1.4.md).

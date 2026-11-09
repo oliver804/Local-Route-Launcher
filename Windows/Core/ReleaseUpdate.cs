@@ -40,6 +40,7 @@ public sealed record ReleaseUpdate(string Version, string Url, bool IsNewer, str
         using var client = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(20), MaxResponseContentBufferSize = 1_048_576 };
         client.DefaultRequestHeaders.UserAgent.ParseAdd("Local-Route-Launcher/" + current);
         client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
+        client.DefaultRequestHeaders.CacheControl = new System.Net.Http.Headers.CacheControlHeaderValue { NoCache = true };
         using var response = await client.GetAsync(ApiUrl, cancellationToken);
         if (response.StatusCode != HttpStatusCode.OK) throw new HttpRequestException("Update check failed");
         return Parse(await response.Content.ReadAsStringAsync(cancellationToken), current);
