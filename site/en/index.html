@@ -56,9 +56,9 @@
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": [
     "macOS 13 or later (Apple Silicon or Intel)",
-    "Windows 10 22H2 / Windows 11 (x64)"
+    "Windows 10 1809+ / Windows 11 (x64)"
   ],
-  "softwareVersion": "1.4.1",
+  "softwareVersion": "1.4.2",
   "inLanguage": [
     "zh-CN", "en", "zh-TW", "ru", "fa", "be", "es", "ar", "pt"
   ],
@@ -69,9 +69,9 @@
     "name": "Oliver"
   },
   "downloadUrl": [
-    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-arm64.dmg",
-    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-x86_64.dmg",
-    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-windows-x64-setup.exe"
+    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-arm64.dmg",
+    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-x86_64.dmg",
+    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-windows-x64-setup.exe"
   ],
   "image": "https://oliver804.github.io/Local-Route-Launcher/assets/icon.png",
   "screenshot": [
@@ -92,7 +92,7 @@
     "Proxy reachability, launch arguments and TCP connection checks"
   ],
   "softwareRequirements": "Requires a compatible Electron-based ChatGPT, Antigravity App or Antigravity IDE installation and an authorized HTTP or mixed proxy endpoint. The Windows installer includes the .NET runtime.",
-  "releaseNotes": "https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.1"
+  "releaseNotes": "https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.2"
 }
   </script>
 </head>
@@ -108,8 +108,8 @@
         <a class="release-tag" href="https://github.com/oliver804/Local-Route-Launcher/releases"><span>Open source</span> Free for macOS and Windows <span aria-hidden="true">↗</span></a>
         <h1 id="hero-title">One launcher.<br><em>Each app, its proxy.</em></h1>
         <p class="hero-description">Save a separate local HTTP proxy host, port and installation path for compatible ChatGPT, Antigravity App and Antigravity IDE. Choose an app to launch without changing system proxy or DNS.</p>
-        <div class="hero-actions"><a class="button primary" href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-arm64.dmg"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>macOS · Apple Silicon</a><a class="button secondary" href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-x86_64.dmg">macOS · Intel <span aria-hidden="true">↓</span></a><a class="button secondary" href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-windows-x64-setup.exe">Download for Windows <span aria-hidden="true">↓</span></a><a class="text-link" href="https://github.com/oliver804/Local-Route-Launcher">View source <span aria-hidden="true">↗</span></a></div>
-        <p class="requirements">macOS 13+ / Apple Silicon &amp; Intel <span>·</span> Windows 10 22H2 / 11 x64</p>
+        <div class="hero-actions"><a class="button primary" href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-arm64.dmg"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>macOS · Apple Silicon</a><a class="button secondary" href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-x86_64.dmg">macOS · Intel <span aria-hidden="true">↓</span></a><a class="button secondary" href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-windows-x64-setup.exe">Download for Windows <span aria-hidden="true">↓</span></a><a class="text-link" href="https://github.com/oliver804/Local-Route-Launcher">View source <span aria-hidden="true">↗</span></a></div>
+        <p class="requirements">macOS 13+ / Apple Silicon &amp; Intel <span>·</span> Windows 10 1809+ / 11 x64</p>
         <p class="compatibility">For detectable Electron versions of ChatGPT, Antigravity App and Antigravity IDE.</p>
       </div>
       <figure class="product-stage">
@@ -146,7 +146,7 @@
         <details><summary>Why is the Windows installer larger than the macOS DMG?</summary><p>The Windows installer bundles the .NET desktop runtime, so no separate runtime download is needed after installation. The macOS edition uses system-provided SwiftUI and AppKit frameworks, keeping its download smaller.</p></details>
         <details><summary>How do I install the Windows version?</summary><p>Run the x64 EXE installer for your current user. The app bundles .NET, includes nine interface languages, and stays in the system tray when closed. Choose a compatible target-app EXE if automatic detection finds nothing. Windows builds are unsigned and may show SmartScreen; verify the release source and SHA-256, and keep system protections enabled. Follow your administrator’s installation policy.</p></details>
         <details><summary>Which Mac download should I choose?</summary><p>Open Apple menu → About This Mac. Choose Apple Silicon (arm64) for Apple M-series chips, or Intel (x86_64) for Intel processors. Both installers require macOS 13 or later.</p></details>
-        <details><summary>Which platforms and target apps are supported?</summary><p>Detectable compatible Electron builds of ChatGPT, Antigravity App and Antigravity IDE are supported on Apple Silicon and Intel Macs with macOS 13+, and Windows 10 22H2 / Windows 11 x64. Intel Macs need an Intel or Universal target app; the launcher cannot run an Apple-Silicon-only app on Intel. Windows ARM64 and older native ChatGPT builds are not supported; restricted Store packages may not permit direct launch. The main window and menu/tray panel offer nine interface languages.</p></details>
+        <details><summary>Which platforms and target apps are supported?</summary><p>Detectable compatible Electron builds of ChatGPT, Antigravity App and Antigravity IDE are supported on Apple Silicon and Intel Macs with macOS 13+, and Windows 10 1809+ / Windows 11 x64. Intel Macs need an Intel or Universal target app; the launcher cannot run an Apple-Silicon-only app on Intel. Windows ARM64 and older native ChatGPT builds are not supported; restricted Store packages may not permit direct launch. The main window and menu/tray panel offer nine interface languages. The Windows installer minimum is 1809, including 21H2 / 22H2 and corresponding LTSC editions. Server-based automated checks do not replace on-device acceptance; target apps have independent OS requirements. <a href="https://github.com/oliver804/Local-Route-Launcher/blob/main/docs/WINDOWS-COMPATIBILITY.en.md">Validation scope</a></p></details>
         <details><summary>Do I need an existing local proxy?</summary><p>Yes. The launcher uses an existing HTTP or mixed proxy port; it does not provide a proxy service. Keep a proxy you are authorized to use running. Routing depends on the target application’s support for these settings. Proxies requiring username/password authentication are not supported.</p></details>
         <details><summary>Will all target-app traffic use the proxy?</summary><p>That is not guaranteed. The launcher uses proxy mechanisms supported by compatible apps, primarily covering Chromium HTTP, HTTPS and WebSocket requests. Voice, WebRTC, UDP and some background processes may not follow these settings. Connection checks are snapshots and cannot prove that all traffic uses the proxy.</p></details>
         <details><summary>What if macOS blocks the app on first launch?</summary><p>The app is ad-hoc signed, but is not Developer ID signed or notarized by Apple. After verifying that it came from this project’s GitHub release page, allow it in System Settings → Privacy &amp; Security. You do not need to disable SIP or system security checks.</p></details>
@@ -156,7 +156,7 @@
       </div>
     </section>
 <section class="section wrap supported-apps" aria-labelledby="apps-title"><span class="eyebrow">SUPPORTED APPS</span><h2 id="apps-title">One place. Three separate profiles.</h2><p>Choose the app you want to open. Its proxy settings, installation path and connection checks stay separate.</p><div class="supported-app-grid"><article><h3>ChatGPT</h3><p>Save dedicated launch settings for a compatible desktop build.</p></article><article><h3>Antigravity App</h3><p>Keep its own proxy and app path, then start or stop it as needed.</p></article><article><h3>Antigravity IDE</h3><p>Use a separate profile and inspect connection and background-service snapshots.</p></article></div></section>
-    <section class="closing wrap" aria-labelledby="download-title"><img src="../assets/icon.png" alt="" width="72" height="72" loading="lazy"><div><h2 id="download-title">A simpler connection starts here.</h2><p>A small, free, open-source tool for a smoother day on your computer.</p></div><a class="button primary" href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-arm64.dmg">macOS · Apple Silicon <span aria-hidden="true">↓</span></a><a class="button secondary" href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-x86_64.dmg">macOS · Intel <span aria-hidden="true">↓</span></a><a class="button secondary" href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.1/Local-Route-Launcher-1.4.1-windows-x64-setup.exe">Download for Windows <span aria-hidden="true">↓</span></a></section>
+    <section class="closing wrap" aria-labelledby="download-title"><img src="../assets/icon.png" alt="" width="72" height="72" loading="lazy"><div><h2 id="download-title">A simpler connection starts here.</h2><p>A small, free, open-source tool for a smoother day on your computer.</p></div><a class="button primary" href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-arm64.dmg">macOS · Apple Silicon <span aria-hidden="true">↓</span></a><a class="button secondary" href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-x86_64.dmg">macOS · Intel <span aria-hidden="true">↓</span></a><a class="button secondary" href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.2/Local-Route-Launcher-1.4.2-windows-x64-setup.exe">Download for Windows <span aria-hidden="true">↓</span></a></section>
   </main>
   <footer class="footer wrap"><div><a class="footer-brand" href="./">Local Route Launcher</a><p>© 2026 Oliver · Independent open-source project. Not affiliated with or endorsed by OpenAI or Google. Product names identify compatibility only; trademarks belong to their owners.</p></div><div class="footer-links"><a href="https://github.com/oliver804/Local-Route-Launcher/blob/main/docs/PRIVACY.en.md">Website privacy</a><a href="https://github.com/oliver804/Local-Route-Launcher">GitHub ↗</a><a href="https://github.com/oliver804/Local-Route-Launcher/blob/main/LICENSE">MIT License</a><a href="https://github.com/oliver804/Local-Route-Launcher/blob/main/docs/USAGE.en.md">Usage boundaries</a><a href="mailto:oliver804x@gmail.com">Contact Oliver</a></div></footer>
 </body>

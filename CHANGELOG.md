@@ -1,5 +1,12 @@
 # Changelog / 更新日志
 
+## 1.4.2 — 2026-11-09
+
+- Lower the Windows installer minimum from Windows 10 22H2 (19045) to 1809 (17763), removing the installation block on 21H2 and corresponding LTSC editions; retain Windows 11 and x64 packaging.
+- Run installed-app, isolated launch/connection, localized UI, tray and uninstall checks on Windows Server 2022 and 2025, recording the tested OS without host/user identifiers. Server checks do not establish Windows 10 client acceptance.
+- Document the compatibility target, independent target-app requirements and remaining Windows 10 on-device validation; update bilingual downloads and website guidance.
+- Windows 安装门槛降至 1809，包含 21H2 / 22H2 及对应 LTSC；不宣称支持所有 Windows 10 版本或架构。界面和代理机制保持不变。
+
 ## 1.4.1 — 2026-11-05
 
 - Add a separate Intel Mac (x86_64) DMG alongside the Apple Silicon (arm64) DMG; both require macOS 13+.

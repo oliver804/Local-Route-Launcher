@@ -6,7 +6,9 @@ Local Route Launcher 是独立开发、采用 MIT 许可证的工具，用于向
 
 请仅用于有权使用的网络、代理服务和账号，并遵守适用法律、网络管理规定及第三方服务条款。项目不授予绕过访问限制、账号控制、速率限制或其他保护措施的权限。连接成功不等于拥有访问权限，也不代表服务一定可用。
 
-启动器支持 Apple Silicon / Intel Mac（macOS 13+），以及 Windows 10 22H2 / Windows 11 x64。目标应用需为可识别且可直接启动的兼容 Electron 版 ChatGPT、Antigravity App 或 Antigravity IDE。Intel Mac 还要求目标应用提供兼容的 Intel 或 Universal 版本；仅支持 Apple Silicon 的目标应用不能因此运行在 Intel Mac 上。目标应用更新可能改变行为。不保证全部流量遵循配置，语音、WebRTC、UDP 及部分子进程可能采用其他连接方式。诊断结果只是即时快照，不构成隐私、匿名、安全或账号可用性保证。
+启动器支持 Apple Silicon / Intel Mac（macOS 13+），以及 Windows 10 1809+ / Windows 11 x64。目标应用需为可识别且可直接启动的兼容 Electron 版 ChatGPT、Antigravity App 或 Antigravity IDE。Intel Mac 还要求目标应用提供兼容的 Intel 或 Universal 版本；仅支持 Apple Silicon 的目标应用不能因此运行在 Intel Mac 上。目标应用更新可能改变行为。不保证全部流量遵循配置，语音、WebRTC、UDP 及部分子进程可能采用其他连接方式。诊断结果只是即时快照，不构成隐私、匿名、安全或账号可用性保证。
+
+Windows 安装最低版本为 1809（build 17763），包含 21H2 / 22H2 及对应 LTSC；自动测试运行在 Windows Server，不能替代各 Windows 10 版本的实机验收。目标应用也必须支持当前系统。[详细兼容性说明](WINDOWS-COMPATIBILITY.md)。
 
 ChatGPT、Antigravity 等产品名称仅用于说明兼容性，商标归各自权利人所有。本项目与 OpenAI / Google 无隶属、赞助或背书关系。内部偏好设置标识为保持升级兼容而保留；应用对外名称为 Local Route Launcher。
 

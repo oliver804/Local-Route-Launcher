@@ -14,7 +14,9 @@ DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-MinVersion=10.0.19045
+; Windows 10 1809 (build 17763), including LTSC 2019; keep Windows 11 eligible.
+; Do not raise this to the build machine's OS version (see docs/WINDOWS-COMPATIBILITY.md).
+MinVersion=10.0.17763
 OutputDir=..\..\dist\{#AppVersion}
 OutputBaseFilename=Local-Route-Launcher-{#AppVersion}-windows-x64-setup
 SetupIconFile=..\..\build\windows\Launcher.ico

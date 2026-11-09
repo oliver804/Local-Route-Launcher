@@ -14,7 +14,7 @@ LOCALES = {'zh-CN': BASE_URL, 'en': BASE_URL + 'en/', 'x-default': BASE_URL}
 ARTICLE_LOCALES = {version: {'zh-CN': BASE_URL + f'blog/v{version}/',
                             'en': BASE_URL + f'en/blog/v{version}/',
                             'x-default': BASE_URL + f'blog/v{version}/'}
-                   for version in ('1.4.0', '1.4.1')}
+                   for version in ('1.4.0', '1.4.1', '1.4.2')}
 ANALYTICS_SCRIPT = 'https://www.googletagmanager.com/gtag/js?id=G-EKDF5J9PFF'
 
 
@@ -87,7 +87,7 @@ class Page(HTMLParser):
 
 def main():
     pages = {path.resolve(): Page(path) for path in SITE.rglob('*.html')}
-    assert len(pages) == 6, 'Expected Chinese and English home and release article pages'
+    assert len(pages) == 8, 'Expected Chinese and English home and release article pages'
     assert {p.locale for p in pages.values()} == {'zh-CN', 'en'}
     for path, page in pages.items():
         parts = path.relative_to(SITE.resolve()).parts
@@ -158,18 +158,18 @@ def main():
         print(f'PASS: {path.relative_to(SITE.resolve())}: links, assets, locale, downloads and SEO metadata')
     ns = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9', 'x': 'http://www.w3.org/1999/xhtml'}
     entries = ET.parse(SITE / 'sitemap.xml').getroot().findall('s:url', ns)
-    assert len(entries) == 6 and {e.findtext('s:loc', namespaces=ns) for e in entries} == set(LOCALES.values()).union(*(set(values.values()) for values in ARTICLE_LOCALES.values()))
+    assert len(entries) == 8 and {e.findtext('s:loc', namespaces=ns) for e in entries} == set(LOCALES.values()).union(*(set(values.values()) for values in ARTICLE_LOCALES.values()))
     for entry in entries:
         loc = entry.findtext('s:loc', namespaces=ns)
         locales = ARTICLE_LOCALES[loc.split('/blog/v')[1].rstrip('/')] if '/blog/' in loc else LOCALES
         alternates = {link.attrib['hreflang']: link.attrib['href'] for link in entry.findall('x:link', ns)}
         assert alternates == locales, 'Sitemap language links differ from pages'
     expected = {'index.html', 'en/index.html', 'blog/v1.4.0/index.html',
-                'en/blog/v1.4.0/index.html', 'blog/v1.4.1/index.html', 'en/blog/v1.4.1/index.html', 'style.css', 'app.js', '.nojekyll',
+                'en/blog/v1.4.0/index.html', 'blog/v1.4.1/index.html', 'en/blog/v1.4.1/index.html', 'blog/v1.4.2/index.html', 'en/blog/v1.4.2/index.html', 'style.css', 'app.js', '.nojekyll',
                 'sitemap.xml', 'assets/icon.png', 'assets/preview-dark.png', 'assets/preview-light.png', 'assets/preview-dark.en.png', 'assets/preview-light.en.png', 'assets/windows-dark.png', 'assets/windows-light.png', 'assets/windows-dark.en.png', 'assets/windows-light.en.png'}
     actual = {str(p.relative_to(SITE)) for p in SITE.rglob('*') if p.is_file()}
     assert actual == expected, 'Unexpected or missing deployed files'
-    print('PASS: bilingual sitemap and deployment allowlist (nineteen public files)')
+    print('PASS: bilingual sitemap and deployment allowlist (twenty-one public files)')
 
 
 if __name__ == '__main__':

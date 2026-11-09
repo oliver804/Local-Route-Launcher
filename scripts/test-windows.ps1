@@ -7,6 +7,20 @@ $build = Join-Path $root 'build/windows'
 $fixture = Join-Path $build 'fixture with spaces'
 $results = Join-Path $build 'test-results'
 New-Item -ItemType Directory -Force $results | Out-Null
+# Keep evidence of the OS actually tested. Server CI is not Windows 10 validation.
+# Deliberately exclude computer name, user, registered owner and serial number.
+$os = Get-CimInstance Win32_OperatingSystem
+[ordered]@{
+    release = $version
+    osCaption = $os.Caption
+    osVersion = $os.Version
+    osBuild = $os.BuildNumber
+    osArchitecture = $os.OSArchitecture
+    processArchitecture = [System.Runtime.InteropServices.RuntimeInformation]::ProcessArchitecture.ToString()
+    installerMinimum = ((Select-String -Path 'Windows/Installer/launcher.iss' -Pattern '^MinVersion=').Line -split '=', 2)[1]
+    isWindowsClient = ($os.ProductType -eq 1)
+} | ConvertTo-Json | Set-Content (Join-Path $results 'environment.json') -Encoding UTF8
+Get-Content (Join-Path $results 'environment.json')
 dotnet publish Windows/Fixture -c Release -r win-x64 --self-contained true -o $fixture
 if ($LASTEXITCODE -ne 0) { throw 'Fixture build failed' }
 New-Item -ItemType Directory -Force (Join-Path $fixture 'resources') | Out-Null

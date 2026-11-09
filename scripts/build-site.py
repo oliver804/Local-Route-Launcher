@@ -8,7 +8,8 @@ ROOT = Path(__file__).resolve().parent.parent
 OUTPUT = ROOT / 'build' / 'site'
 SITE_FILES = ('index.html', 'en/index.html', 'blog/v1.4.0/index.html',
               'en/blog/v1.4.0/index.html', 'blog/v1.4.1/index.html',
-              'en/blog/v1.4.1/index.html', 'style.css', 'app.js', 'assets/icon.png')
+              'en/blog/v1.4.1/index.html', 'blog/v1.4.2/index.html',
+              'en/blog/v1.4.2/index.html', 'style.css', 'app.js', 'assets/icon.png')
 BASE_URL = 'https://oliver804.github.io/Local-Route-Launcher/'
 
 
@@ -20,7 +21,8 @@ def write_sitemap():
     root = ET.Element(f'{{{namespace}}}urlset')
     for zh, en in ((BASE_URL, BASE_URL + 'en/'),
                    (BASE_URL + 'blog/v1.4.0/', BASE_URL + 'en/blog/v1.4.0/'),
-                   (BASE_URL + 'blog/v1.4.1/', BASE_URL + 'en/blog/v1.4.1/')):
+                   (BASE_URL + 'blog/v1.4.1/', BASE_URL + 'en/blog/v1.4.1/'),
+                   (BASE_URL + 'blog/v1.4.2/', BASE_URL + 'en/blog/v1.4.2/')):
         locales = {'zh-CN': zh, 'en': en, 'x-default': zh}
         for url in (zh, en):
             entry = ET.SubElement(root, f'{{{namespace}}}url')

@@ -72,7 +72,11 @@ jobs:
           retention-days: 7
 
   windows:
-    runs-on: windows-2025
+    strategy:
+      fail-fast: false
+      matrix:
+        runner: [windows-2022, windows-2025]
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -87,14 +91,14 @@ jobs:
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: always()
         with:
-          name: windows-installer
+          name: windows-installer-${{ matrix.runner }}
           path: dist/*/*-windows-x64-setup.exe
           if-no-files-found: warn
           retention-days: 7
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: always()
         with:
-          name: windows-validation
+          name: windows-validation-${{ matrix.runner }}
           path: build/windows/test-results/*
           if-no-files-found: warn
           retention-days: 7
