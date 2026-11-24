@@ -58,7 +58,7 @@ class Page(HTMLParser):
             self.json_buffer = ''
         if tag == 'img':
             assert 'alt' in attrs, 'Image has no alt attribute'
-        for key in ('href', 'src', 'data-dark', 'data-light'):
+        for key in ('href', 'src', 'data-dark', 'data-light', 'data-windows-dark', 'data-windows-light'):
             if key in attrs:
                 self.links.append(attrs[key])
         if tag == 'a' and attrs.get('href', '').endswith(('.dmg', '.exe')):
@@ -105,7 +105,7 @@ def main():
         assert 'clarity-tracking' in page.ids, 'Missing Clarity loader'
         assert path.read_text().count('"https://www.clarity.ms/tag/"+i') == 1, 'Missing or duplicate Clarity script injection'
         assert path.read_text().count('})(window, document, "clarity", "script", "z5pd48bgrz");') == 1, 'Incorrect Clarity project configuration'
-        assert len(page.downloads) == len(downloads) * (1 if is_article else 2) and set(page.downloads) == downloads, 'Wrong release link'
+        assert len(page.downloads) == len(downloads) + (0 if is_article else 1) and set(page.downloads) == downloads, 'Wrong release link'
         assert page.canonical == locales[page.locale], 'Incorrect canonical URL'
         assert page.alternates == locales, 'Incomplete reciprocal language links'
         assert page.meta.get('description'), 'Missing search description'
