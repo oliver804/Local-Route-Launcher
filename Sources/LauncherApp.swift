@@ -512,7 +512,6 @@ struct MenuPanel: View {
             .environment(\.layoutDirection, store.current.language.isRightToLeft ? .rightToLeft : .leftToRight)
             .onAppear {
                 store.models.values.forEach { $0.updateRunning() }
-                if store.updates.automatic { Task { await store.checkTargetUpdates() } }
             }
     }
 }
@@ -622,7 +621,7 @@ struct LauncherApp: App {
             .windowResizability(.contentMinSize)
             .defaultSize(width: 1024, height: min(860, max(600, (NSScreen.main?.visibleFrame.height ?? 880) - 100)))
             .defaultPosition(.center)
-            .commands { LauncherCommands(model: store.current) { Task { await store.checkTargetUpdates(force: true) } } }
+            .commands { LauncherCommands(model: store.current) { Task { await store.checkTargetUpdates() } } }
         MenuBarExtra {
             MenuPanel(store: store)
         } label: {

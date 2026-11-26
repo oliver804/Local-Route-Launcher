@@ -163,7 +163,7 @@
         <details><summary>目标应用的所有流量都会经过代理吗？</summary><p>不保证。启动器使用兼容应用支持的代理机制，主要覆盖 Chromium 的 HTTP、HTTPS 和 WebSocket 请求。语音、WebRTC、UDP 及部分后台进程可能不使用这些设置。连接检查是即时快照，不能证明全部流量都经过代理。</p></details>
         <details><summary>首次打开被 macOS 拦截怎么办？</summary><p>安装包使用本地签名，尚未经过 Apple Developer ID 签名或公证。确认来自本项目的 GitHub 发布页面后，可在「系统设置 → 隐私与安全性」中允许打开，无需关闭 SIP 或系统安全检查。</p></details>
         <details><summary>Antigravity App 和 IDE 如何分别设置代理？</summary><p>在左侧选择对应应用，各自保存代理地址、端口和安装路径。完全退出后从启动器打开。两份配置与 ChatGPT 独立；后台服务需要实际请求后再次查看连接快照。</p></details>
-        <details><summary>如何检查 ChatGPT 和 Antigravity 的更新？</summary><p>启动器会检查 ChatGPT、Antigravity App 和 IDE 的官方稳定渠道。确认有适用新版时，主窗口在当前版本旁显示“更新到”，菜单栏和托盘在应用名称后显示相同入口。点击打开官方更新渠道，安装由你自行完成。</p></details>
+        <details><summary>如何检查 ChatGPT 和 Antigravity 的更新？</summary><p>启动器会检查 ChatGPT、Antigravity App 和 IDE 的官方稳定渠道。有适用新版时，主窗口在当前版本旁显示“更新到”，菜单栏和托盘在应用名称后显示相同入口。点击打开官方更新渠道，安装由你自行完成。</p></details>
         <details><summary>启动器如何提醒更新？会自动安装吗？</summary><p>仅当 GitHub 发布了适用于当前平台的稳定新版，版本旁才显示“有更新”。点击时重新查询最新稳定版，校验对应安装包后在默认浏览器下载，安装仍需自行完成；查询失败时不会下载此前检测到的旧版本。离线或无新版时不显示。</p></details>
         <details><summary>会收集账号信息或聊天记录吗？</summary><p>启动器不读取或保存目标应用的密码、Cookie、令牌或聊天记录，也没有遥测或自动上传。配置保存在本机。连接检查会通过指定代理向对应服务站点发起不附带账号凭据的 HEAD 请求。<a href="https://github.com/oliver804/Local-Route-Launcher/blob/main/docs/PRIVACY.md">阅读隐私说明 ↗</a></p></details>
       </div>

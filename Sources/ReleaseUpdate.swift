@@ -192,3 +192,11 @@ enum TargetUpdateCopy {
         }
     }
 }
+
+
+enum UpdateSchedule {
+    static func isDue(at now: Date, after previous: Date, calendar: Calendar = .current) -> Bool {
+        let hour = calendar.component(.hour, from: now)
+        return (7..<22).contains(hour) && now.timeIntervalSince(previous) >= 6 * 60 * 60
+    }
+}

@@ -95,9 +95,19 @@ public sealed partial class MainWindow : Window
         SourceInitialized += (_, _) => System.Windows.Interop.HwndSource.FromHwnd(new System.Windows.Interop.WindowInteropHelper(this).Handle)?.AddHook((IntPtr h, int m, IntPtr w, IntPtr l, ref bool handled) => { if (m == 0x8001) { Reveal(); handled = true; } return IntPtr.Zero; });
         Closing += OnClosing;
         if (!smoke) SystemEvents.UserPreferenceChanged += SystemAppearanceChanged;
-        Closed += (_, _) => { SystemEvents.UserPreferenceChanged -= SystemAppearanceChanged; updateCancellation.Cancel(); trayWindow?.Close(); monitor.Stop(); tray?.Dispose(); };
+        Closed += (_, _) => { SystemEvents.UserPreferenceChanged -= SystemAppearanceChanged; updateCancellation.Cancel(); trayWindow?.Close(); monitor.Stop(); updateTimer.Stop(); tray?.Dispose(); };
         monitor.Tick += async (_, _) => await Poll();
-        if (!smoke) { monitor.Start(); Loaded += async (_, _) => { if (settings.CheckUpdatesAtStartup) await Task.WhenAll(CheckUpdates(), CheckTargetUpdates()); }; }
+        if (!smoke)
+        {
+            monitor.Start();
+            updateTimer.Tick += async (_, _) => await CheckAutomaticUpdates();
+            Loaded += async (_, _) =>
+            {
+                if (updateTimer.IsEnabled) return;
+                updateTimer.Start();
+                await CheckAutomaticUpdates(startup: true);
+            };
+        }
         if (!smoke) Loaded += async (_, _) => { if (string.IsNullOrEmpty(settings.ApplicationPath)) await Work(Detect, "Detected"); };
     }
     public void Preview(string language, string theme) { settings = settings with { Language = language, Theme = theme }; notice = "Ready"; Build(); }
@@ -413,7 +423,7 @@ public sealed partial class MainWindow : Window
         menu.Items.Add(T("Check"), null, (_, _) => { Reveal(); Check(); });
         if (UpdateAvailable) menu.Items.Add(T("UpdateAvailable"), null, async (_, _) => await DownloadUpdate());
         var checkTargetUpdates = new Forms.ToolStripMenuItem(CheckTargetUpdateLabel);
-        checkTargetUpdates.Click += async (_, _) => await CheckTargetUpdates(force: true);
+        checkTargetUpdates.Click += async (_, _) => await CheckTargetUpdates();
         menu.Items.Add(checkTargetUpdates);
         menu.Items.Add(T("Quit"), null, (_, _) => { if (!busy) Quit(); });
         tray.ContextMenuStrip = menu; tray.DoubleClick += (_, _) => Reveal();
