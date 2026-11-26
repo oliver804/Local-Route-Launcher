@@ -25,6 +25,12 @@ Check(ReleaseUpdate.Parse(InstallerJson("v1.3.0"), "1.4.0").AvailableDownload ==
 Check(ReleaseUpdate.Parse(InstallerJson("v1.4.1", name: "Local-Route-Launcher-1.4.1-arm64.dmg"), "1.4.0").AvailableDownload == null, "Reject other platform");
 foreach (var badUrl in new[] { "https://example.com/setup.exe", expectedDownload + "?redirect=elsewhere", expectedDownload.Replace("v1.4.1/", "v1.3.0/") })
     Check(ReleaseUpdate.Parse(InstallerJson("v1.4.1", download: badUrl), "1.4.0").AvailableDownload == null, "Reject mismatched installer");
+DateTimeOffset At(int day, int hour, int minute = 0) => new(2026, 11, day, hour, minute, 0, TimeSpan.FromHours(8));
+Check(!UpdateSchedule.IsDue(At(26, 12, 59), At(26, 7)), "Do not check before the interval");
+Check(UpdateSchedule.IsDue(At(26, 13), At(26, 7)), "Check when the interval elapses");
+Check(!UpdateSchedule.IsDue(At(26, 22), At(26, 16)), "Exclude the closing boundary");
+Check(!UpdateSchedule.IsDue(At(27, 6, 59), At(26, 19)), "Stay idle before the window");
+Check(UpdateSchedule.IsDue(At(27, 7), At(26, 19)), "Check overdue updates at the opening boundary");
 Check(new Settings().CheckUpdatesAtStartup, "Startup check default");
 var endpoint = new ProxyEndpoint(" 127.0.0.1 ", " 7890 ");
 Check(endpoint.Url == "http://127.0.0.1:7890", "IPv4 normalization");

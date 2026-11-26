@@ -290,7 +290,8 @@ final class LauncherStore: ObservableObject {
     @Published private var targetVersions: [ApplicationKind: String] = [:]
     private var checkedChatGPTPath: String?
     private var checkingTargets = false
-    private var lastTargetCheck: Date?
+    private var lastAutomaticCheck: Date?
+    private var updateTimer: Timer?
     private let allowsTargetChecks: Bool
 
     func targetUpdate(_ model: LauncherModel) -> String? {
@@ -301,11 +302,23 @@ final class LauncherStore: ObservableObject {
         return latest
     }
 
-    func checkTargetUpdates(force: Bool = false) async {
-        guard allowsTargetChecks, !checkingTargets,
-              force || (lastTargetCheck?.timeIntervalSinceNow ?? -.infinity) < -900 else { return }
+    private func checkAutomaticUpdates(startup: Bool = false) async {
+        guard allowsTargetChecks, updates.automatic else { return }
+        let now = Date()
+        if !startup {
+            guard let lastAutomaticCheck, UpdateSchedule.isDue(at: now, after: lastAutomaticCheck) else { return }
+        }
+        guard !updates.checking, !checkingTargets else { return }
+        lastAutomaticCheck = now
+        async let launcher = updates.check()
+        await checkTargetUpdates()
+        _ = await launcher
+    }
+
+    func checkTargetUpdates() async {
+        guard allowsTargetChecks, !checkingTargets else { return }
         checkingTargets = true
-        defer { checkingTargets = false; lastTargetCheck = Date() }
+        defer { checkingTargets = false }
         let path = models[.chatgpt]!.appPath
         async let supportsChatGPT = Task.detached(priority: .utility) {
             guard let target = try? TargetApplication(path: path, kind: .chatgpt) else { return false }
@@ -339,14 +352,20 @@ final class LauncherStore: ObservableObject {
             ($0, LauncherModel(defaults: defaults, monitor: monitor, previewVersion: previewVersion, kind: $0))
         })
         updates.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }.store(in: &subscriptions)
-        if monitor && updates.automatic {
-            Task { await updates.check() }
-            Task { await checkTargetUpdates() }
+        if allowsTargetChecks {
+            Task { [weak self] in await self?.checkAutomaticUpdates(startup: true) }
+            let timer = Timer(timeInterval: 60, repeats: true) { [weak self] _ in
+                Task { @MainActor [weak self] in await self?.checkAutomaticUpdates() }
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            updateTimer = timer
         }
         for model in models.values {
             model.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }.store(in: &subscriptions)
         }
     }
+    deinit { updateTimer?.invalidate() }
+
     func setLanguage(_ language: AppLanguage?) {
         guard !busy else { return }
         for model in models.values {

@@ -72,6 +72,16 @@ enum UpdateTests {
         check(TargetReleases.chatGPTVersion(appcast, architecture: "x86_64", system: supportedOS) == nil, "Reject mismatched appcast hardware")
         check(TargetReleases.chatGPTVersion(appcast.replacingOccurrences(of: "13.0", with: "14.0"), architecture: "arm64", system: supportedOS) == nil, "Respect appcast minimum OS")
         check(TargetReleases.chatGPTVersion(appcast.replacingOccurrences(of: "<item>", with: "<item><sparkle:channel>beta</sparkle:channel>"), architecture: "arm64", system: supportedOS) == nil, "Exclude beta appcast items")
+        var clock = Calendar(identifier: .gregorian)
+        clock.timeZone = TimeZone(secondsFromGMT: 8 * 3600)!
+        func at(_ day: Int, _ hour: Int, _ minute: Int = 0) -> Date {
+            clock.date(from: DateComponents(year: 2026, month: 11, day: day, hour: hour, minute: minute))!
+        }
+        check(!UpdateSchedule.isDue(at: at(26, 12, 59), after: at(26, 7), calendar: clock), "Do not check before the interval")
+        check(UpdateSchedule.isDue(at: at(26, 13), after: at(26, 7), calendar: clock), "Check when the interval elapses")
+        check(!UpdateSchedule.isDue(at: at(26, 22), after: at(26, 16), calendar: clock), "Exclude the closing boundary")
+        check(!UpdateSchedule.isDue(at: at(27, 6, 59), after: at(26, 19), calendar: clock), "Stay idle before the window")
+        check(UpdateSchedule.isDue(at: at(27, 7), after: at(26, 19), calendar: clock), "Check overdue updates at the opening boundary")
         let domain = "local.route.update-tests." + UUID().uuidString
         let defaults = UserDefaults(suiteName: domain)!
         defer { defaults.removePersistentDomain(forName: domain) }

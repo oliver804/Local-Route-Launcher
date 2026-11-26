@@ -132,7 +132,6 @@ public sealed partial class MainWindow
                 ShowInTaskbar = false, Topmost = true, Icon = Icon };
             trayWindow.Deactivated += (_, _) => { if (!quitting && trayWindow?.IsVisible == true && !trayWindow.IsKeyboardFocusWithin) trayWindow.Hide(); };
         }
-        if (settings.CheckUpdatesAtStartup) _ = CheckTargetUpdates();
         PopulateTrayPanel(); trayWindow.Show(); trayWindow.UpdateLayout();
         var area = SystemParameters.WorkArea;
         trayWindow.Left = area.Right - trayWindow.ActualWidth - 12; trayWindow.Top = area.Bottom - trayWindow.ActualHeight - 12; trayWindow.Activate();

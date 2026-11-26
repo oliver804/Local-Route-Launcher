@@ -22,7 +22,17 @@ public sealed partial class MainWindow
         return configured.Length == 0 ? detectedUpdatePaths.GetValueOrDefault(id, "") : configured;
     }
     private bool checkingTargets;
-    private DateTime lastTargetCheck;
+    private DateTimeOffset? lastAutomaticCheck;
+    private readonly System.Windows.Threading.DispatcherTimer updateTimer = new() { Interval = TimeSpan.FromMinutes(1) };
+
+    private async Task CheckAutomaticUpdates(bool startup = false)
+    {
+        if (quitting || !settings.CheckUpdatesAtStartup || updateChecking || checkingTargets) return;
+        var now = DateTimeOffset.Now;
+        if (!startup && (lastAutomaticCheck is not { } previous || !UpdateSchedule.IsDue(now, previous))) return;
+        lastAutomaticCheck = now;
+        await Task.WhenAll(CheckUpdates(), CheckTargetUpdates());
+    }
 
     private static Version? InstalledTargetVersion(TargetApp target, string path)
     {
@@ -89,9 +99,9 @@ public sealed partial class MainWindow
         catch (Exception ex) when (ex is HttpRequestException or OperationCanceledException) { return null; }
     }
 
-    private async Task CheckTargetUpdates(bool force = false)
+    private async Task CheckTargetUpdates()
     {
-        if (smoke || quitting || checkingTargets || (!force && DateTime.UtcNow - lastTargetCheck < TimeSpan.FromMinutes(15))) return;
+        if (smoke || quitting || checkingTargets) return;
         checkingTargets = true;
         try
         {
@@ -135,7 +145,7 @@ public sealed partial class MainWindow
             }
             RefreshAuxiliaryWindows();
         }
-        finally { checkingTargets = false; lastTargetCheck = DateTime.UtcNow; }
+        finally { checkingTargets = false; }
     }
 
     private void ReadGoogleRelease(string html, string id, string prefix, string file)
