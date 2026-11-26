@@ -58,7 +58,7 @@
     "macOS 13 or later (Apple Silicon or Intel)",
     "Windows 10 1809+ / Windows 11 (x64)"
   ],
-  "softwareVersion": "1.4.3",
+  "softwareVersion": "1.4.4",
   "inLanguage": [
     "zh-CN", "en", "zh-TW", "ru", "fa", "be", "es", "ar", "pt"
   ],
@@ -69,9 +69,9 @@
     "name": "Oliver"
   },
   "downloadUrl": [
-    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-arm64.dmg",
-    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-x86_64.dmg",
-    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-windows-x64-setup.exe"
+    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-arm64.dmg",
+    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-x86_64.dmg",
+    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-windows-x64-setup.exe"
   ],
   "image": "https://oliver804.github.io/Local-Route-Launcher/assets/icon.png",
   "screenshot": [
@@ -85,6 +85,7 @@
     "url": "https://oliver804.github.io/Local-Route-Launcher/"
   },
   "featureList": [
+    "ChatGPT、Antigravity App 与 IDE 更新检查",
     "ChatGPT、Antigravity App 与 Antigravity IDE 独立 HTTP 代理配置",
     "Windows 系统托盘与 macOS 菜单栏操作",
     "九种界面语言切换",
@@ -92,7 +93,7 @@
     "代理连通性、启动参数与 TCP 连接检查"
   ],
   "softwareRequirements": "需要已安装的兼容 Electron 版 ChatGPT、Antigravity App 或 Antigravity IDE，以及有权使用的 HTTP 或混合代理端口。Windows 安装包内置 .NET 运行环境。",
-  "releaseNotes": "https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.3"
+  "releaseNotes": "https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.4"
 }
   </script>
 </head>
@@ -111,12 +112,12 @@
         <div class="download-picker" id="download" data-download-picker>
           <div class="download-tabs" role="group" aria-label="选择下载系统"><button type="button" data-platform="mac" aria-pressed="true">macOS</button><button type="button" data-platform="windows" aria-pressed="false">Windows</button></div>
           <div class="download-control"><div class="download-split">
-            <a class="download-main" data-mac-download href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-arm64.dmg" aria-label="下载 macOS Apple Silicon 版本"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>下载</a>
-            <a class="download-main download-windows" data-windows-download href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-windows-x64-setup.exe" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>下载 Windows 版 · x64</a>
+            <a class="download-main" data-mac-download href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-arm64.dmg" aria-label="下载 macOS Apple Silicon 版本"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>下载</a>
+            <a class="download-main download-windows" data-windows-download href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-windows-x64-setup.exe" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>下载 Windows 版 · x64</a>
             <button class="download-variant" type="button" aria-label="选择 macOS 芯片版本" aria-expanded="false" aria-controls="download-options"><span data-variant-label>.dmg · Apple Silicon</span><span class="chevron" aria-hidden="true">⌄</span></button>
           </div><div class="download-options" id="download-options" hidden>
-            <a href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-arm64.dmg" data-variant="arm64" aria-current="true">.dmg (Apple Silicon)<span aria-hidden="true">✓</span></a>
-            <a href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-x86_64.dmg" data-variant="intel">.dmg (Intel)<span aria-hidden="true"></span></a>
+            <a href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-arm64.dmg" data-variant="arm64" aria-current="true">.dmg (Apple Silicon)<span aria-hidden="true">✓</span></a>
+            <a href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-x86_64.dmg" data-variant="intel">.dmg (Intel)<span aria-hidden="true"></span></a>
           </div></div>
           <p class="download-meta"><span data-platform-requirements>macOS 13+ · Apple Silicon</span><span aria-hidden="true">·</span><a href="https://github.com/oliver804/Local-Route-Launcher">查看源码 ↗</a></p>
         </div>
@@ -162,6 +163,7 @@
         <details><summary>目标应用的所有流量都会经过代理吗？</summary><p>不保证。启动器使用兼容应用支持的代理机制，主要覆盖 Chromium 的 HTTP、HTTPS 和 WebSocket 请求。语音、WebRTC、UDP 及部分后台进程可能不使用这些设置。连接检查是即时快照，不能证明全部流量都经过代理。</p></details>
         <details><summary>首次打开被 macOS 拦截怎么办？</summary><p>安装包使用本地签名，尚未经过 Apple Developer ID 签名或公证。确认来自本项目的 GitHub 发布页面后，可在「系统设置 → 隐私与安全性」中允许打开，无需关闭 SIP 或系统安全检查。</p></details>
         <details><summary>Antigravity App 和 IDE 如何分别设置代理？</summary><p>在左侧选择对应应用，各自保存代理地址、端口和安装路径。完全退出后从启动器打开。两份配置与 ChatGPT 独立；后台服务需要实际请求后再次查看连接快照。</p></details>
+        <details><summary>如何检查 ChatGPT 和 Antigravity 的更新？</summary><p>启动器会检查 ChatGPT、Antigravity App 和 IDE 的官方稳定渠道。确认有适用新版时，主窗口在当前版本旁显示“更新到”，菜单栏和托盘在应用名称后显示相同入口。点击打开官方更新渠道，安装由你自行完成。</p></details>
         <details><summary>启动器如何提醒更新？会自动安装吗？</summary><p>仅当 GitHub 发布了适用于当前平台的稳定新版，版本旁才显示“有更新”。点击时重新查询最新稳定版，校验对应安装包后在默认浏览器下载，安装仍需自行完成；查询失败时不会下载此前检测到的旧版本。离线或无新版时不显示。</p></details>
         <details><summary>会收集账号信息或聊天记录吗？</summary><p>启动器不读取或保存目标应用的密码、Cookie、令牌或聊天记录，也没有遥测或自动上传。配置保存在本机。连接检查会通过指定代理向对应服务站点发起不附带账号凭据的 HEAD 请求。<a href="https://github.com/oliver804/Local-Route-Launcher/blob/main/docs/PRIVACY.md">阅读隐私说明 ↗</a></p></details>
       </div>

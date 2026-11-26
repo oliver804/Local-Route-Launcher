@@ -48,13 +48,17 @@ public sealed partial class MainWindow
         return new Viewbox { Width = 17, Height = 17, Child = canvas };
     }
     private bool UpdateAvailable => !updateChecking && updateRelease?.AvailableDownload != null;
-    private Button UpdateButton()
+    private FrameworkElement UpdateGlyph()
     {
-        var label = new StackPanel { Orientation = Orientation.Horizontal };
         var glyph = new Canvas { Width = 24, Height = 24 };
         glyph.Children.Add(new System.Windows.Shapes.Path { Data = Geometry.Parse("M12 16V8 M8 12l4-4 4 4 M22 12A10 10 0 1 1 2 12A10 10 0 1 1 22 12"),
             Stroke = accent, StrokeThickness = 2, StrokeStartLineCap = PenLineCap.Round, StrokeEndLineCap = PenLineCap.Round, StrokeLineJoin = PenLineJoin.Round });
-        label.Children.Add(new Viewbox { Width = 12, Height = 12, Child = glyph, Margin = new Thickness(0, 0, 4, 0) });
+        return new Viewbox { Width = 12, Height = 12, Child = glyph, Margin = new Thickness(0, 0, 4, 0) };
+    }
+    private Button UpdateButton()
+    {
+        var label = new StackPanel { Orientation = Orientation.Horizontal };
+        label.Children.Add(UpdateGlyph());
         label.Children.Add(new TextBlock { Text = T("UpdateAvailable") });
         var button = new Button { Style = roundedButtonStyle, Content = label, ToolTip = T("UpdateAvailable"), Foreground = accent, Background = field, BorderThickness = new Thickness(0),
             FontSize = 10, Padding = new Thickness(6, 4, 6, 4), Margin = new Thickness(6, 0, 0, 0), Visibility = UpdateAvailable ? Visibility.Visible : Visibility.Collapsed };
@@ -128,6 +132,7 @@ public sealed partial class MainWindow
                 ShowInTaskbar = false, Topmost = true, Icon = Icon };
             trayWindow.Deactivated += (_, _) => { if (!quitting && trayWindow?.IsVisible == true && !trayWindow.IsKeyboardFocusWithin) trayWindow.Hide(); };
         }
+        if (settings.CheckUpdatesAtStartup) _ = CheckTargetUpdates();
         PopulateTrayPanel(); trayWindow.Show(); trayWindow.UpdateLayout();
         var area = SystemParameters.WorkArea;
         trayWindow.Left = area.Right - trayWindow.ActualWidth - 12; trayWindow.Top = area.Bottom - trayWindow.ActualHeight - 12; trayWindow.Activate();
@@ -150,7 +155,11 @@ public sealed partial class MainWindow
                 await Work(async () => { if (wasRunning) { RequireApp(); await WindowsPlatform.Stop(settings.ApplicationPath); } else await LaunchCurrent(); }, wasRunning ? "Stopped" : "Launched");
                 RefreshAuxiliaryWindows();
             }); action.IsEnabled = !busy; action.MaxWidth = 180; right.Children.Add(action);
-            var left = new StackPanel(); left.Children.Add(Text(target.Name, 13, true));
+            var left = new StackPanel();
+            var name = new WrapPanel();
+            name.Children.Add(Text(target.Name, 13, true));
+            if (TargetUpdate(target) is string available) name.Children.Add(TargetUpdateButton(target, available, compact: true));
+            left.Children.Add(name);
             var endpoint = Text(Route(target.Id, Profile(target.Id)), 11, false, muted); endpoint.FlowDirection = FlowDirection.LeftToRight; left.Children.Add(endpoint); row.Children.Add(left); body.Children.Add(row);
         }
         body.Children.Add(new Separator { Margin = new Thickness(0, 12, 0, 12) });

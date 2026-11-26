@@ -1,5 +1,10 @@
 # Changelog / 更新日志
 
+## 1.4.4 — 2026-11-26
+
+- Check official stable releases for ChatGPT, Antigravity App and Antigravity IDE and open the corresponding official update channel.
+- 应用检测到适用新版时显示版本徽标。检查失败时保持静默，启动器自身更新仍由底部版本入口处理。
+
 ## 1.4.3 — 2026-11-09
 
 - Refresh the latest stable GitHub release when the update badge is clicked, then open its validated platform/architecture installer instead of the URL cached at startup.

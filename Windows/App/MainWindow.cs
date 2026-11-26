@@ -97,7 +97,7 @@ public sealed partial class MainWindow : Window
         if (!smoke) SystemEvents.UserPreferenceChanged += SystemAppearanceChanged;
         Closed += (_, _) => { SystemEvents.UserPreferenceChanged -= SystemAppearanceChanged; updateCancellation.Cancel(); trayWindow?.Close(); monitor.Stop(); tray?.Dispose(); };
         monitor.Tick += async (_, _) => await Poll();
-        if (!smoke) { monitor.Start(); Loaded += async (_, _) => { if (settings.CheckUpdatesAtStartup) await CheckUpdates(); }; }
+        if (!smoke) { monitor.Start(); Loaded += async (_, _) => { if (settings.CheckUpdatesAtStartup) await Task.WhenAll(CheckUpdates(), CheckTargetUpdates()); }; }
         if (!smoke) Loaded += async (_, _) => { if (string.IsNullOrEmpty(settings.ApplicationPath)) await Work(Detect, "Detected"); };
     }
     public void Preview(string language, string theme) { settings = settings with { Language = language, Theme = theme }; notice = "Ready"; Build(); }
@@ -199,7 +199,7 @@ public sealed partial class MainWindow : Window
         sidebarItems.Children.Add(Text(T("Apps"), 12, false, muted));
         foreach (var target in TargetApp.All)
         {
-            var selector = Button(target.Name + "\n" + T(Running(target.Id) ? "Running" : "NotRunning"), () => SelectApp(target.Id));
+            var selector = Button(target.Name + (target.Id != settings.SelectedApplication && TargetUpdate(target) != null ? "  •" : "") + "\n" + T(Running(target.Id) ? "Running" : "NotRunning"), () => SelectApp(target.Id));
             selector.HorizontalContentAlignment = HorizontalAlignment.Left;
             if (target.Id == settings.SelectedApplication) { selector.Background = Color(dark ? "#28473B" : "#DCEEE5"); selector.Foreground = accent; }
             sidebarItems.Children.Add(selector);
@@ -215,7 +215,15 @@ public sealed partial class MainWindow : Window
         Content = root;
         FlowDirection = AppLanguages.IsRightToLeft(settings.ResolvedLanguage) ? FlowDirection.RightToLeft : FlowDirection.LeftToRight;
         var header = new StackPanel { Margin = new Thickness(0, 0, 0, 14) };
-        header.Children.Add(Text(Target.Name, 23, true)); header.Children.Add(Text(T("Tagline"), 12, false, muted)); panel.Children.Add(header);
+        var titleRow = new DockPanel();
+        var versionGroup = new StackPanel { Orientation = Orientation.Horizontal, VerticalAlignment = VerticalAlignment.Center };
+        var installed = InstalledTargetVersion(Target, TargetUpdatePath(Target.Id));
+        if (installed != null) versionGroup.Children.Add(Text(installed.ToString(), 11, false, muted));
+        if (TargetUpdate(Target) is string available) versionGroup.Children.Add(TargetUpdateButton(Target, available));
+        DockPanel.SetDock(versionGroup, Dock.Right);
+        titleRow.Children.Add(versionGroup);
+        titleRow.Children.Add(Text(Target.Name, 23, true));
+        header.Children.Add(titleRow); header.Children.Add(Text(T("Tagline"), 12, false, muted)); panel.Children.Add(header);
         var launchCard = Card(); var launchHeader = new DockPanel();
         var badge = Text(T(Running(settings.SelectedApplication) ? "Running" : "NotRunning"), 11, false, accent); DockPanel.SetDock(badge, Dock.Right); launchHeader.Children.Add(badge);
         launchHeader.Children.Add(Text(T("Heading"), 20, true)); launchCard.Children.Add(launchHeader);
@@ -403,8 +411,11 @@ public sealed partial class MainWindow : Window
         menu.Items.Add(appearance);
         menu.Items.Add("GitHub", null, (_, _) => OpenRepository());
         menu.Items.Add(T("Check"), null, (_, _) => { Reveal(); Check(); });
-        menu.Items.Add(T("Quit"), null, (_, _) => { if (!busy) Quit(); });
         if (UpdateAvailable) menu.Items.Add(T("UpdateAvailable"), null, async (_, _) => await DownloadUpdate());
+        var checkTargetUpdates = new Forms.ToolStripMenuItem(CheckTargetUpdateLabel);
+        checkTargetUpdates.Click += async (_, _) => await CheckTargetUpdates(force: true);
+        menu.Items.Add(checkTargetUpdates);
+        menu.Items.Add(T("Quit"), null, (_, _) => { if (!busy) Quit(); });
         tray.ContextMenuStrip = menu; tray.DoubleClick += (_, _) => Reveal();
         tray.MouseClick += (_, e) => { if (e.Button == Forms.MouseButtons.Left) ShowTrayPanel(); };
     }

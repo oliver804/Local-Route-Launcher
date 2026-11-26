@@ -58,7 +58,7 @@
     "macOS 13 or later (Apple Silicon or Intel)",
     "Windows 10 1809+ / Windows 11 (x64)"
   ],
-  "softwareVersion": "1.4.3",
+  "softwareVersion": "1.4.4",
   "inLanguage": [
     "zh-CN", "en", "zh-TW", "ru", "fa", "be", "es", "ar", "pt"
   ],
@@ -69,9 +69,9 @@
     "name": "Oliver"
   },
   "downloadUrl": [
-    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-arm64.dmg",
-    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-x86_64.dmg",
-    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-windows-x64-setup.exe"
+    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-arm64.dmg",
+    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-x86_64.dmg",
+    "https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-windows-x64-setup.exe"
   ],
   "image": "https://oliver804.github.io/Local-Route-Launcher/assets/icon.png",
   "screenshot": [
@@ -85,6 +85,7 @@
     "url": "https://oliver804.github.io/Local-Route-Launcher/en/"
   },
   "featureList": [
+    "Update checks for ChatGPT, Antigravity App and Antigravity IDE",
     "Separate HTTP proxy settings for ChatGPT, Antigravity App and Antigravity IDE",
     "Windows system tray and macOS menu bar controls",
     "Nine interface languages",
@@ -92,7 +93,7 @@
     "Proxy reachability, launch arguments and TCP connection checks"
   ],
   "softwareRequirements": "Requires a compatible Electron-based ChatGPT, Antigravity App or Antigravity IDE installation and an authorized HTTP or mixed proxy endpoint. The Windows installer includes the .NET runtime.",
-  "releaseNotes": "https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.3"
+  "releaseNotes": "https://github.com/oliver804/Local-Route-Launcher/releases/tag/v1.4.4"
 }
   </script>
 </head>
@@ -111,12 +112,12 @@
         <div class="download-picker" id="download" data-download-picker>
           <div class="download-tabs" role="group" aria-label="Choose an operating system"><button type="button" data-platform="mac" aria-pressed="true">macOS</button><button type="button" data-platform="windows" aria-pressed="false">Windows</button></div>
           <div class="download-control"><div class="download-split">
-            <a class="download-main" data-mac-download href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-arm64.dmg" aria-label="Download for macOS Apple Silicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>Download</a>
-            <a class="download-main download-windows" data-windows-download href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-windows-x64-setup.exe" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>Download Windows · x64</a>
+            <a class="download-main" data-mac-download href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-arm64.dmg" aria-label="Download for macOS Apple Silicon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>Download</a>
+            <a class="download-main download-windows" data-windows-download href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-windows-x64-setup.exe" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 16v4h14v-4"/></svg>Download Windows · x64</a>
             <button class="download-variant" type="button" aria-label="Choose a macOS chip version" aria-expanded="false" aria-controls="download-options"><span data-variant-label>.dmg · Apple Silicon</span><span class="chevron" aria-hidden="true">⌄</span></button>
           </div><div class="download-options" id="download-options" hidden>
-            <a href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-arm64.dmg" data-variant="arm64" aria-current="true">.dmg (Apple Silicon)<span aria-hidden="true">✓</span></a>
-            <a href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.3/Local-Route-Launcher-1.4.3-x86_64.dmg" data-variant="intel">.dmg (Intel)<span aria-hidden="true"></span></a>
+            <a href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-arm64.dmg" data-variant="arm64" aria-current="true">.dmg (Apple Silicon)<span aria-hidden="true">✓</span></a>
+            <a href="https://github.com/oliver804/Local-Route-Launcher/releases/download/v1.4.4/Local-Route-Launcher-1.4.4-x86_64.dmg" data-variant="intel">.dmg (Intel)<span aria-hidden="true"></span></a>
           </div></div>
           <p class="download-meta"><span data-platform-requirements>macOS 13+ · Apple Silicon</span><span aria-hidden="true">·</span><a href="https://github.com/oliver804/Local-Route-Launcher">View source ↗</a></p>
         </div>
@@ -161,6 +162,7 @@
         <details><summary>Will all target-app traffic use the proxy?</summary><p>That is not guaranteed. The launcher uses proxy mechanisms supported by compatible apps, primarily covering Chromium HTTP, HTTPS and WebSocket requests. Voice, WebRTC, UDP and some background processes may not follow these settings. Connection checks are snapshots and cannot prove that all traffic uses the proxy.</p></details>
         <details><summary>What if macOS blocks the app on first launch?</summary><p>The app is ad-hoc signed, but is not Developer ID signed or notarized by Apple. After verifying that it came from this project’s GitHub release page, allow it in System Settings → Privacy &amp; Security. You do not need to disable SIP or system security checks.</p></details>
         <details><summary>How do I configure Antigravity App and IDE separately?</summary><p>Choose each app in the sidebar and save its own proxy host, port and installation path. Fully quit the app, then launch it through the launcher. The two profiles are separate from ChatGPT. Check background-service connections again after a real request.</p></details>
+        <details><summary>How do I check for ChatGPT and Antigravity updates?</summary><p>The launcher checks official stable channels for ChatGPT, Antigravity App and Antigravity IDE. A confirmed update appears beside the installed version in the main window or next to the app name in the menu bar or tray. Click the badge to open the official update channel.</p></details>
         <details><summary>How does the launcher notify me about updates?</summary><p>An update badge appears only when GitHub has a newer stable release with an installer for your platform. Clicking checks the latest stable release again and downloads its validated installer in your default browser; you run it yourself. A failed refresh never falls back to an earlier download. Offline or current versions show no badge.</p></details>
         <details><summary>Does it collect account details or conversations?</summary><p>The launcher does not read or store target-app passwords, cookies, tokens or conversations. There is no telemetry or automatic upload, and settings stay on your computer. Connection checks send a credential-free HEAD request to the selected service through your proxy. <a href="https://github.com/oliver804/Local-Route-Launcher/blob/main/docs/PRIVACY.en.md">Read the privacy policy ↗</a></p></details>
       </div>

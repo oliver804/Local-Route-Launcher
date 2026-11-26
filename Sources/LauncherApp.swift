@@ -83,6 +83,7 @@ private struct StatusTile: View {
 
 struct LauncherView: View {
     @ObservedObject var model: LauncherModel
+    var targetUpdate: String? = nil
 
     var body: some View {
         VStack(spacing: 0) {
@@ -115,6 +116,7 @@ struct LauncherView: View {
             }
             Spacer()
             Text(model.version).font(.system(size: 11)).foregroundStyle(.secondary)
+            if let targetUpdate { TargetUpdateBadge(model: model, version: targetUpdate) }
         }.padding(.bottom, 2)
     }
 
@@ -402,7 +404,12 @@ struct LauncherWindow: View {
                             HStack(spacing: 10) {
                                 Image(systemName: kind.symbol).frame(width: 22)
                                 VStack(alignment: .leading, spacing: 5) {
-                                    Text(kind.name).font(.system(size: 12, weight: .medium))
+                                    HStack(spacing: 5) {
+                                        Text(kind.name).font(.system(size: 12, weight: .medium))
+                                        if store.selected != kind, store.targetUpdate(store.models[kind]!) != nil {
+                                            Circle().fill(Palette.accent).frame(width: 5, height: 5)
+                                        }
+                                    }
                                     Text(store.models[kind]!.text(store.models[kind]!.running ? "运行中" : "未运行"))
                                         .font(.system(size: 11)).foregroundStyle(store.models[kind]!.running ? Palette.accent : .secondary)
                                 }
@@ -410,14 +417,14 @@ struct LauncherWindow: View {
                             }.padding(12).frame(maxWidth: .infinity, alignment: .leading)
                                 .background(store.selected == kind ? Palette.accent.opacity(0.12) : Color.clear, in: RoundedRectangle(cornerRadius: 10))
                                 .contentShape(Rectangle())
-                        }.buttonStyle(.plain).accessibilityLabel(kind.name)
+                        }.buttonStyle(.plain).accessibilityLabel(kind.name + (store.targetUpdate(store.models[kind]!) == nil ? "" : " · " + store.current.text("有更新")))
                     }
                 }
                 Spacer()
                 UpdateIndicator(store: store)
             }.padding(16).padding(.top, 22).frame(width: 204)
             Divider()
-            LauncherView(model: store.current).id(store.selected)
+            LauncherView(model: store.current, targetUpdate: store.targetUpdate(store.current)).id(store.selected)
         }
         }.frame(minWidth: 865, minHeight: 600)
             .ignoresSafeArea(.container, edges: .top)
@@ -426,14 +433,38 @@ struct LauncherWindow: View {
     }
 }
 
+private struct TargetUpdateBadge: View {
+    let model: LauncherModel
+    let version: String
+    var compact = false
+
+    var body: some View {
+        let title = TargetUpdateCopy.label(version, language: model.language)
+        Button { NSWorkspace.shared.open(TargetReleases.officialPage(model.kind)) } label: {
+            HStack(spacing: 3) {
+                Image(systemName: "arrow.up.circle")
+                Text(title).lineLimit(1)
+            }
+            .font(.system(size: compact ? 9 : 11))
+            .padding(.horizontal, compact ? 4 : 6).padding(.vertical, 3)
+            .foregroundStyle(Palette.accent)
+            .background(Palette.accent.opacity(0.12), in: Capsule())
+        }.buttonStyle(.plain).help(title).accessibilityLabel(title)
+    }
+}
+
 private struct MenuApplicationRow: View {
     @ObservedObject var model: LauncherModel
+    let targetUpdate: String?
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(spacing: 10) {
                 Image(systemName: model.kind.symbol).foregroundStyle(.secondary).frame(width: 22)
                 VStack(alignment: .leading, spacing: 5) {
-                    Text(model.kind.name).font(.system(size: 12, weight: .semibold))
+                    HStack(spacing: 4) {
+                        Text(model.kind.name).font(.system(size: 12, weight: .semibold)).layoutPriority(1)
+                        if let targetUpdate { TargetUpdateBadge(model: model, version: targetUpdate, compact: true) }
+                    }
                     Text(model.endpointLabel).font(.system(size: 10, design: .monospaced)).foregroundStyle(.secondary).environment(\.layoutDirection, .leftToRight)
                 }
                 Spacer(minLength: 6)
@@ -467,7 +498,7 @@ struct MenuPanel: View {
             }
             ForEach(ApplicationKind.allCases) { kind in
                 Divider()
-                MenuApplicationRow(model: store.models[kind]!)
+                MenuApplicationRow(model: store.models[kind]!, targetUpdate: store.targetUpdate(store.models[kind]!))
             }
             Divider()
             HStack(spacing: 8) {
@@ -479,7 +510,10 @@ struct MenuPanel: View {
         }.padding(.horizontal, 20).padding(.top, 18).padding(.bottom, 14).frame(width: 340).background(Palette.canvas).tint(Palette.accent)
             .environment(\.locale, store.current.language.locale)
             .environment(\.layoutDirection, store.current.language.isRightToLeft ? .rightToLeft : .leftToRight)
-            .onAppear { store.models.values.forEach { $0.updateRunning() } }
+            .onAppear {
+                store.models.values.forEach { $0.updateRunning() }
+                if store.updates.automatic { Task { await store.checkTargetUpdates() } }
+            }
     }
 }
 
@@ -563,6 +597,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
 private struct LauncherCommands: SwiftUI.Commands {
     @ObservedObject var model: LauncherModel
+    let checkTargetUpdates: () -> Void
     @Environment(\.openWindow) private var openWindow
     var body: some SwiftUI.Commands {
         CommandGroup(replacing: .newItem) {
@@ -571,6 +606,7 @@ private struct LauncherCommands: SwiftUI.Commands {
                 openWindow(id: "main")
                 DockPresence.shared.activateMainWindow()
             }.keyboardShortcut("0", modifiers: .command)
+            Button(TargetUpdateCopy.check(model.language), action: checkTargetUpdates)
         }
     }
 }
@@ -586,7 +622,7 @@ struct LauncherApp: App {
             .windowResizability(.contentMinSize)
             .defaultSize(width: 1024, height: min(860, max(600, (NSScreen.main?.visibleFrame.height ?? 880) - 100)))
             .defaultPosition(.center)
-            .commands { LauncherCommands(model: store.current) }
+            .commands { LauncherCommands(model: store.current) { Task { await store.checkTargetUpdates(force: true) } } }
         MenuBarExtra {
             MenuPanel(store: store)
         } label: {

@@ -287,6 +287,34 @@ enum AppTheme: String, CaseIterable, Identifiable {
 @MainActor
 final class LauncherStore: ObservableObject {
     let updates: UpdateModel
+    @Published private var targetVersions: [ApplicationKind: String] = [:]
+    private var checkedChatGPTPath: String?
+    private var checkingTargets = false
+    private var lastTargetCheck: Date?
+    private let allowsTargetChecks: Bool
+
+    func targetUpdate(_ model: LauncherModel) -> String? {
+        guard model.kind != .chatgpt || model.appPath == checkedChatGPTPath,
+              let latest = targetVersions[model.kind],
+              let installed = ReleaseVersion(model.version), let available = ReleaseVersion(latest),
+              installed < available else { return nil }
+        return latest
+    }
+
+    func checkTargetUpdates(force: Bool = false) async {
+        guard allowsTargetChecks, !checkingTargets,
+              force || (lastTargetCheck?.timeIntervalSinceNow ?? -.infinity) < -900 else { return }
+        checkingTargets = true
+        defer { checkingTargets = false; lastTargetCheck = Date() }
+        let path = models[.chatgpt]!.appPath
+        async let supportsChatGPT = Task.detached(priority: .utility) {
+            guard let target = try? TargetApplication(path: path, kind: .chatgpt) else { return false }
+            return TargetReleases.supportsChatGPT(target)
+        }.value
+        let versions = await TargetReleases.check()
+        checkedChatGPTPath = await supportsChatGPT ? path : nil
+        targetVersions = versions
+    }
     @Published var theme: AppTheme {
         didSet {
             defaults.set(theme.rawValue, forKey: "interfaceTheme")
@@ -303,6 +331,7 @@ final class LauncherStore: ObservableObject {
 
     init(defaults: UserDefaults = .standard, monitor: Bool = true, previewVersion: String? = nil) {
         self.defaults = defaults
+        allowsTargetChecks = monitor && previewVersion == nil
         updates = UpdateModel(defaults: defaults, version: previewVersion ?? Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.4.0")
         theme = AppTheme(rawValue: defaults.string(forKey: "interfaceTheme") ?? "") ?? .system
         selected = ApplicationKind(rawValue: defaults.string(forKey: "selectedApplication") ?? "") ?? .chatgpt
@@ -310,7 +339,10 @@ final class LauncherStore: ObservableObject {
             ($0, LauncherModel(defaults: defaults, monitor: monitor, previewVersion: previewVersion, kind: $0))
         })
         updates.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }.store(in: &subscriptions)
-        if monitor && updates.automatic { Task { await updates.check() } }
+        if monitor && updates.automatic {
+            Task { await updates.check() }
+            Task { await checkTargetUpdates() }
+        }
         for model in models.values {
             model.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }.store(in: &subscriptions)
         }

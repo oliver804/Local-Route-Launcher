@@ -53,6 +53,25 @@ enum UpdateTests {
         for badURL in ["https://example.com/setup.dmg", expectedDownload + "?redirect=elsewhere", expectedDownload.replacingOccurrences(of: "v1.4.1/", with: "v1.3.0/")] {
             check(try ReleaseUpdate.parse(installer("v1.4.1", url: badURL), current: "1.4.0").availableDownload == nil, "Reject mismatched installer")
         }
+        let hub = "https://storage.googleapis.com/antigravity-public/antigravity-hub/2.35.2-123/darwin-arm/Antigravity.dmg"
+        let ide = "https://edgedl.me.gvt1.com/edgedl/release2/j0qc3/antigravity/stable/2.8.0-456/darwin-arm/Antigravity%20IDE.dmg"
+        let google = #"<a href=""# + hub + #"">App</a><a href=""# + ide + #"">IDE</a>"#
+        check(TargetReleases.googleVersion(google, kind: .antigravity, platform: "darwin-arm") == "2.35.2", "Select App installer")
+        check(TargetReleases.googleVersion(google, kind: .antigravityIDE, platform: "darwin-arm") == "2.8.0", "Select standalone IDE installer")
+        check(TargetReleases.googleVersion(google, kind: .antigravity, platform: "darwin-x64") == nil, "No badge for another architecture")
+        check(TargetReleases.googleVersion(google + google.replacingOccurrences(of: "2.35.2", with: "3.0.0"), kind: .antigravity, platform: "darwin-arm") == nil, "Ambiguous official downloads stay quiet")
+        let appcast = """
+        <item><sparkle:hardwareRequirements>arm64</sparkle:hardwareRequirements>
+        <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+        <sparkle:shortVersionString>26.1120.50957</sparkle:shortVersionString>
+        <enclosure url="https://persistent.oaistatic.com/codex-app-prod/ChatGPT-darwin-arm64-26.1120.50957.zip" />
+        </item>
+        """
+        let supportedOS = OperatingSystemVersion(majorVersion: 13, minorVersion: 0, patchVersion: 0)
+        check(TargetReleases.chatGPTVersion(appcast, architecture: "arm64", system: supportedOS) == "26.1120.50957", "Match ChatGPT stable platform")
+        check(TargetReleases.chatGPTVersion(appcast, architecture: "x86_64", system: supportedOS) == nil, "Reject mismatched appcast hardware")
+        check(TargetReleases.chatGPTVersion(appcast.replacingOccurrences(of: "13.0", with: "14.0"), architecture: "arm64", system: supportedOS) == nil, "Respect appcast minimum OS")
+        check(TargetReleases.chatGPTVersion(appcast.replacingOccurrences(of: "<item>", with: "<item><sparkle:channel>beta</sparkle:channel>"), architecture: "arm64", system: supportedOS) == nil, "Exclude beta appcast items")
         let domain = "local.route.update-tests." + UUID().uuidString
         let defaults = UserDefaults(suiteName: domain)!
         defer { defaults.removePersistentDomain(forName: domain) }

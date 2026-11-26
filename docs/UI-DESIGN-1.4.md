@@ -19,13 +19,19 @@ Accepted by Oliver on 2026-10-30. This is the implementation baseline, not a fut
 
 ## Launcher updates / 启动器更新
 
-- Only Local Route Launcher updates, not ChatGPT or Antigravity updates.
+- The footer indicator only represents Local Route Launcher updates. Third-party updates are shown by the matching app.
 - Check the repository's stable GitHub Release at startup when enabled; preserve the existing stored startup-check preference.
 - Show “有更新” / “Update available” beside the version only when a newer stable release has the matching platform installer. Hide it when current, older, checking, offline or missing an installer.
 - Clicking must first re-fetch the latest stable release and validate its matching installer; the cached badge release must never be used as the download fallback. Failed, cancelled or overlapping refreshes open nothing. Hide the badge while checking and deduplicate main/menu/tray clicks.
 - Clicking opens the freshly validated installer download URL directly in the default browser; no intermediate update panel or release-page detour. The user then runs the downloaded installer. Never silently install or overwrite the running app.
 - Offline, invalid response and rate limit failures do not interrupt launching apps. No fake version data. The v1.4.1 shown in the design proposal was illustrative only.
 - Compare numeric stable semantic versions, exclude drafts/prereleases, validate release links against the repository, use timeouts and avoid overlapping requests. No update network requests in previews/smoke tests.
+
+## Target app updates / 应用更新
+
+- Keep the existing sidebar, three cards, and menu/tray actions. The main window shows a version badge beside the installed version, with the update icon before the label. Unselected apps can show a dot in the sidebar.
+- In the menu/tray row, place the badge immediately after the app name. Keep the running state and Start/Stop control in their original trailing column.
+- Show a badge only for an identified, newer release from the matching official channel. Failed checks and unresolved versions stay quiet. The action opens the official update channel without installing or stopping the app.
 
 ## Brand and repository / 图标与仓库
 
